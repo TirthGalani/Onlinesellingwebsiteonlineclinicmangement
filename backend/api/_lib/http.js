@@ -1,6 +1,6 @@
-const { neon } = require('@neondatabase/serverless');
 const jwt = require('jsonwebtoken');
 const crypto = require('node:crypto');
+const db = require('./db');
 
 const SESSION_COOKIE = 'maison_session';
 const SESSION_SECONDS = 8 * 60 * 60;
@@ -22,8 +22,7 @@ function method(req, allowed, res) {
 }
 
 function database() {
-  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not configured.');
-  return neon(process.env.DATABASE_URL);
+  return db.database();
 }
 
 function cookieValue(req, name) {

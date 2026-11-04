@@ -1,11 +1,30 @@
-// Zero-dependency local web server for Maison Dental Clinic Management System
-// Serves the frontend/ directory at http://127.0.0.1:5500/
+// Local web server for Maison Dental Clinic Management System.
+// Serves the portal and the real /api/* handlers on one origin, which is what the
+// HttpOnly session cookie and the mutation origin guard both require.
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+const { handleApiRequest } = require('./backend/server/router');
+const { usingEmbeddedDatabase } = require('./backend/api/_lib/db');
+
 const PORT = process.env.PORT || 5500;
-const ROOT_DIR = path.join(__dirname, 'frontend');
+const ROOT_DIR = __dirname;
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const separator = trimmed.indexOf('=');
+    if (separator === -1) continue;
+    const key = trimmed.slice(0, separator).trim();
+    if (process.env[key] !== undefined) continue;
+    process.env[key] = trimmed.slice(separator + 1).trim().replace(/^"(.*)"$/, '$1');
+  }
+}
+
+loadEnvFile(path.join(ROOT_DIR, '.env'));
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -23,40 +42,56 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  let reqPath = decodeURI(req.url.split('?')[0]);
-  if (reqPath === '/' || reqPath === '') {
-    reqPath = '/index.html';
+  let url;
+  try {
+    url = new URL(req.url, `http://${req.headers.host || '127.0.0.1'}`);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Bad request');
+    return;
   }
 
-  const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
-  const filePath = path.join(ROOT_DIR, safePath);
+  if (url.pathname.startsWith('/api/')) {
+    handleApiRequest(req, res, url).catch(error => {
+      console.error('[server] unhandled API failure:', error);
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end('{"error":"Server error."}');
+      }
+    });
+    return;
+  }
+
+  const reqPath = url.pathname === '/' ? '/index.html' : decodeURIComponent(url.pathname);
+  const filePath = path.normalize(path.join(ROOT_DIR, reqPath));
+  if (filePath !== ROOT_DIR && !filePath.startsWith(ROOT_DIR + path.sep)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('403 Forbidden');
+    return;
+  }
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end(`404 Not Found: ${safePath}`);
+      res.end(`404 Not Found: ${reqPath}`);
       return;
     }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
+    const contentType = MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Access-Control-Allow-Origin': '*'
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
     });
-
-    const stream = fs.createReadStream(filePath);
-    stream.pipe(res);
+    fs.createReadStream(filePath).pipe(res);
   });
 });
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`\n======================================================`);
-  console.log(`  Maison Dental Portal (frontend/) is running!`);
-  console.log(`  Access the portal at:`);
-  console.log(`  👉 http://127.0.0.1:${PORT}/index.html`);
+  console.log(`  Maison Dental Portal + API is running!`);
+  console.log(`  Portal: http://127.0.0.1:${PORT}/index.html`);
+  console.log(`  Health: http://127.0.0.1:${PORT}/api/health`);
+  console.log(`  Storage: ${usingEmbeddedDatabase() ? 'embedded Postgres (backend/.pgdata)' : 'Neon (DATABASE_URL)'}`);
   console.log(`======================================================\n`);
 });
 

@@ -384,6 +384,11 @@ class MaisonState {
   constructor() {
     if (typeof window !== 'undefined') window.maisonStore = this;
     if (typeof globalThis !== 'undefined') globalThis.maisonStore = this;
+    this.api = (typeof window !== 'undefined' && window.maisonApi) || null;
+    // Live = the clinic API is reachable and this browser holds only the current
+    // member's session data. Demo = no API, so the sample clinic from localStorage renders.
+    this.live = false;
+    this.activeThreadId = null;
     this.data = this.loadState();
   }
 
@@ -429,6 +434,9 @@ class MaisonState {
   }
 
   saveState(stateToSave) {
+    // Live records stay in Postgres; copying patient data into localStorage would leak it
+    // to anyone with the browser profile.
+    if (this.live) return;
     try {
       const storage = this._getStorage();
       const raw = stateToSave || this.data;
@@ -449,8 +457,15 @@ class MaisonState {
   }
 
   resetToDemo() {
+    if (this.live) return this.data;
     this.data = JSON.parse(JSON.stringify(INITIAL_STATE));
     this.saveState(this.data);
+    return this.data;
+  }
+
+  async refresh() {
+    if (!this.live) return this.resetToDemo();
+    await this.hydrate();
     return this.data;
   }
 
@@ -463,7 +478,195 @@ class MaisonState {
     return null;
   }
 
-  addAppointment(aptData) {
+  /* ------------------------------------------------------------------
+     LIVE CLINIC MODE — everything below talks to /api and the database.
+     The view-model shapes stay identical to the demo state so the
+     existing renderers do not need a second implementation.
+  ------------------------------------------------------------------ */
+  get role() {
+    return (this.data.currentUser && this.data.currentUser.role) || 'patient';
+  }
+
+  blankState() {
+    const blank = JSON.parse(JSON.stringify(INITIAL_STATE));
+    blank.currentUser = null;
+    blank.appointments = [];
+    blank.treatments = [];
+    blank.chatThreads = [];
+    blank.reviews = [];
+    blank.notifications = [];
+    blank.stats = { totalAppointments: 0, activePatients: 0, remindersSent: 0, satisfactionRate: '—' };
+    return blank;
+  }
+
+  clearCache() {
+    try {
+      this._getStorage().removeItem(MAISON_STORAGE_KEY);
+    } catch (e) {
+      // Storage blocked: there was nothing cached anyway.
+    }
+  }
+
+  async restoreSession() {
+    if (!this.api) return null;
+    let user = null;
+    try {
+      user = await this.api.session();
+    } catch (error) {
+      // 401/403 just means "signed out"; anything else is a real outage the caller should surface.
+      if (error.status === 401 || error.status === 403) {
+        // The API answered, so this is a live host without a session — not a static demo copy.
+        // Staying in demo mode would hide the sign-in form and keep cached patient rows readable.
+        this.live = true;
+        this.clearCache();
+        this.data = this.blankState();
+        return null;
+      }
+      throw error;
+    }
+    if (!user) return null;
+    await this.goLive(user);
+    return user;
+  }
+
+  async signIn(email, password) {
+    const user = await this.api.login(email, password);
+    await this.goLive(user);
+    return user;
+  }
+
+  async signUp(profile) {
+    const user = await this.api.register(profile);
+    await this.goLive(user);
+    return user;
+  }
+
+  async signOut() {
+    try {
+      await this.api.logout();
+    } finally {
+      this.live = false;
+      this.activeThreadId = null;
+      this.clearCache();
+      this.data = this.blankState();
+    }
+  }
+
+  async goLive(user) {
+    this.live = true;
+    this.activeThreadId = null;
+    this.clearCache();
+    this.data = this.blankState();
+    this.data.currentUser = user;
+    await this.hydrate();
+  }
+
+  async hydrate() {
+    const bundle = await this.api.workspace();
+    this.data.appointments = this.sorted(bundle.appointments);
+    this.data.treatments = bundle.treatments;
+    this.data.reviews = bundle.reviews;
+    this.data.notifications = bundle.notifications;
+    this.data.chatThreads = bundle.threads.map(thread => this.applyUnread(thread));
+    this.data.stats = this.deriveStats();
+    await this.loadRoster();
+    if (this.data.chatThreads.length) {
+      await this.openThread(this.data.chatThreads[0].id).catch(() => {});
+    }
+  }
+
+  async loadRoster() {
+    try {
+      const dentists = await this.api.clinicians();
+      if (dentists.length) this.data.dentists = dentists;
+    } catch (e) {
+      // A roster failure must not blank the workspace; the booked clinician names still show.
+    }
+  }
+
+  /* The API counts unread messages for the signed-in member only, so the per-role
+   * counters the demo carried are filled for this member and left at zero for others. */
+  applyUnread(thread) {
+    const unread = thread.unreadCount || 0;
+    thread.patientUnreadCount = this.role === 'patient' ? unread : 0;
+    thread.doctorUnreadCount = this.role === 'doctor' ? unread : 0;
+    thread.mgmtUnreadCount = this.role === 'management' ? unread : 0;
+    return thread;
+  }
+
+  sorted(appointments) {
+    return (appointments || []).slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+
+  deriveStats() {
+    const appointments = this.data.appointments || [];
+    const patients = new Set(appointments.map(apt => apt.patientId || apt.patientName));
+    const reminded = appointments.filter(apt => apt.reminderSentAt).length;
+    const ratings = (this.data.reviews || []).map(review => Number(review.rating)).filter(Boolean);
+    const average = ratings.length ? ratings.reduce((sum, value) => sum + value, 0) / ratings.length : 0;
+    return {
+      totalAppointments: appointments.length,
+      activePatients: patients.size,
+      remindersSent: reminded,
+      satisfactionRate: ratings.length ? `${Math.round((average / 5) * 100)}%` : 'No reviews yet'
+    };
+  }
+
+  async refreshNotifications() {
+    if (!this.live) return this.data.notifications;
+    this.data.notifications = await this.api.notifications();
+    return this.data.notifications;
+  }
+
+  async openThread(threadId) {
+    if (!this.live) {
+      return (this.data.chatThreads || []).find(thread => thread.id === threadId) || null;
+    }
+    const page = await this.api.threadMessages(threadId);
+    // The endpoint answers with the thread header and a separate message page; the renderers read
+    // messages off the thread, so they have to be joined here.
+    let thread = this.applyUnread(Object.assign(page.thread, { messages: page.messages }));
+    const index = this.data.chatThreads.findIndex(existing => existing.id === thread.id);
+    if (index >= 0) {
+      this.data.chatThreads[index] = Object.assign(this.data.chatThreads[index], thread);
+      thread = this.data.chatThreads[index];
+    } else {
+      this.data.chatThreads.unshift(thread);
+    }
+    this.activeThreadId = thread.id;
+    return thread;
+  }
+
+  appointmentForPatient() {
+    // Patients only ever see their own rows: /api/appointments is already scoped by session.
+    return this.data.appointments || [];
+  }
+
+  async clinicianIdForName(dentistName) {
+    const match = (this.data.dentists || []).find(dentist => dentist.name === dentistName);
+    return match ? match.id : '';
+  }
+
+  async addAppointment(aptData) {
+    if (this.live) {
+      const clinicianId = aptData.clinicianId || await this.clinicianIdForName(aptData.dentist);
+      const appointment = await this.api.createAppointment({
+        service: aptData.service,
+        dentist: aptData.dentist,
+        clinicianId,
+        date: aptData.date,
+        notes: aptData.notes || '',
+        room: aptData.room || '',
+        patientId: aptData.patientId || ''
+      });
+      this.data.appointments = this.sorted(
+        [appointment].concat(this.data.appointments.filter(existing => existing.id !== appointment.id))
+      );
+      this.data.stats = this.deriveStats();
+      await this.refreshNotifications().catch(() => {});
+      return appointment;
+    }
+
     const newApt = {
       id: 'apt-' + Date.now(),
       patientName: aptData.patientName,
@@ -490,25 +693,48 @@ class MaisonState {
     return newApt;
   }
 
-  confirmAppointment(aptId) {
-    const apt = this.data.appointments.find(a => a.id === aptId);
-    if (apt) {
-      apt.status = 'confirmed';
-      apt.confirmedAt = new Date().toISOString();
-
-      this.addNotification({
-        title: 'Appointment Confirmed',
-        message: `Appointment for ${apt.patientName} (${apt.service}) on ${new Date(apt.date).toLocaleString()} has been confirmed.`,
-        type: 'success'
-      });
-
-      this.saveState();
-      return apt;
-    }
-    return null;
+  replaceAppointment(appointment) {
+    const index = this.data.appointments.findIndex(existing => existing.id === appointment.id);
+    if (index >= 0) this.data.appointments[index] = appointment;
+    else this.data.appointments = this.sorted([appointment].concat(this.data.appointments));
+    return appointment;
   }
 
-  cancelAppointment(aptId) {
+  async confirmAppointment(aptId, status = 'confirmed') {
+    if (this.live) {
+      const appointment = await this.api.updateAppointment({ id: aptId, status });
+      this.replaceAppointment(appointment);
+      this.data.stats = this.deriveStats();
+      await this.refreshNotifications().catch(() => {});
+      return appointment;
+    }
+
+    const apt = this.data.appointments.find(a => a.id === aptId);
+    if (!apt) return null;
+    apt.status = status;
+    apt.confirmedAt = new Date().toISOString();
+
+    this.addNotification({
+      title: 'Appointment Confirmed',
+      message: `Appointment for ${apt.patientName} (${apt.service}) on ${new Date(apt.date).toLocaleString()} has been confirmed.`,
+      type: 'success'
+    });
+
+    this.saveState();
+    return apt;
+  }
+
+  async cancelAppointment(aptId, reason = '') {
+    if (this.live) {
+      const existing = this.data.appointments.find(a => a.id === aptId);
+      if (!existing || ['completed', 'cancelled'].includes(existing.status)) return null;
+      const appointment = await this.api.updateAppointment({ id: aptId, status: 'cancelled', cancellationReason: reason });
+      this.replaceAppointment(appointment);
+      this.data.stats = this.deriveStats();
+      await this.refreshNotifications().catch(() => {});
+      return appointment;
+    }
+
     const apt = this.data.appointments.find(a => a.id === aptId);
     if (!apt || apt.status === 'completed' || apt.status === 'cancelled') return null;
     apt.status = 'cancelled';
@@ -522,7 +748,43 @@ class MaisonState {
     return apt;
   }
 
-  sendReminders() {
+  async rescheduleAppointment(aptId, input) {
+    if (!this.live) return null;
+    const appointment = await this.api.updateAppointment(Object.assign({ id: aptId }, input));
+    this.replaceAppointment(appointment);
+    this.data.appointments = this.sorted(this.data.appointments);
+    this.data.stats = this.deriveStats();
+    await this.refreshNotifications().catch(() => {});
+    return appointment;
+  }
+
+  /* The management "dispatch reminders" button sends one manual reminder per upcoming
+   * appointment through the same delivery audit trail as the scheduled run. */
+  async sendReminders() {
+    if (this.live) {
+      const upcoming = (this.data.appointments || []).filter(apt =>
+        ['requested', 'confirmed'].includes(apt.status) && new Date(apt.date).getTime() > Date.now()
+      );
+      let sent = 0;
+      let skipped = 0;
+      let failed = 0;
+      for (const apt of upcoming.slice(0, 40)) {
+        try {
+          const result = await this.api.triggerAppointmentReminder(apt.id);
+          const deliveries = result.deliveries || [];
+          if (deliveries.some(item => item.status === 'sent')) sent += 1;
+          else if (deliveries.some(item => item.status === 'failed')) failed += 1;
+          else skipped += 1;
+          this.replaceAppointment(Object.assign({}, apt, { reminderSentAt: new Date().toISOString() }));
+        } catch (e) {
+          failed += 1;
+        }
+      }
+      await this.refreshNotifications().catch(() => {});
+      this.data.stats = this.deriveStats();
+      return { processed: upcoming.length, sent, skipped, failed };
+    }
+
     this.data.stats.remindersSent = (this.data.stats.remindersSent || 0) + 4;
     this.addNotification({
       title: 'Concierge Reminders Dispatched',
@@ -530,10 +792,23 @@ class MaisonState {
       type: 'reminder'
     });
     this.saveState();
-    return this.data.stats.remindersSent;
+    return { processed: 4, sent: 4, skipped: 0, failed: 0 };
   }
 
-  addReview(reviewData) {
+  async addReview(reviewData) {
+    if (this.live) {
+      const payload = await this.api.addReview({
+        appointmentId: reviewData.appointmentId,
+        rating: Number(reviewData.rating),
+        title: reviewData.title,
+        content: reviewData.content
+      });
+      const review = window.maisonApiFormat.toReview(payload.review || {});
+      this.data.reviews.unshift(review);
+      this.data.stats = this.deriveStats();
+      return review;
+    }
+
     const newReview = {
       id: 'rev-' + Date.now(),
       author: reviewData.author || this.data.currentUser.name,
@@ -554,19 +829,90 @@ class MaisonState {
     return newReview;
   }
 
-  addMessage(threadId, messageData) {
+  async addMessage(threadId, messageData) {
+    if (this.live) {
+      const thread = (this.data.chatThreads || []).find(t => t.id === threadId) || this.data.chatThreads[0];
+      if (!thread) throw new Error('No conversation is open.');
+      const payload = await this.api.sendMessage({
+        patientId: thread.patientId,
+        body: messageData.text || '',
+        messageType: messageData.type || 'standard'
+      });
+      const sender = this.data.currentUser;
+      const message = Object.assign(window.maisonApiFormat.toMessage(payload.message || {}), {
+        senderRole: sender.role,
+        senderName: sender.name,
+        attachments: []
+      });
+      const staged = (messageData.attachments || []).filter(item => item.file);
+      for (const item of staged) {
+        try {
+          const dataBase64 = await this.readAsBase64(item.file);
+          await this.api.uploadAttachment(message.id, item.name, dataBase64);
+        } catch (e) {
+          console.warn('Attachment upload failed', e);
+        }
+      }
+      const fresh = await this.openThread(thread.id);
+      await this.refreshNotifications().catch(() => {});
+      return { message: fresh.messages[fresh.messages.length - 1] || message, thread: fresh };
+    }
+
     let thread = this.data.chatThreads.find(t => t.id === threadId);
     if (!thread) {
       // Find or default to first thread
       thread = this.data.chatThreads[0];
     }
+    const newMsg = this.buildDemoMessage(thread, messageData);
+    thread.messages.push(newMsg);
+    thread.lastUpdated = 'Just now';
+    this.applyDemoUnread(thread, messageData.senderRole || this.data.currentUser.role);
+    this.addNotification({
+      title: `New message from ${messageData.senderName || this.data.currentUser.name}`,
+      message: newMsg.text ? (newMsg.text.length > 60 ? newMsg.text.substring(0, 60) + '...' : newMsg.text) : 'Attached ' + newMsg.attachments.length + ' file(s)',
+      type: 'info'
+    });
+    this.saveState();
+    return { message: newMsg, thread };
+  }
 
+  readAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = () => reject(reader.error || new Error('Could not read the file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async markThreadRead(threadId, role = 'patient') {
+    if (this.live) {
+      const target = this.data.chatThreads.find(t => t.id === threadId) || this.data.chatThreads[0];
+      if (!target) return null;
+      await this.api.markThreadRead(target.id);
+      target.unreadCount = 0;
+      target.patientUnreadCount = 0;
+      target.doctorUnreadCount = 0;
+      target.mgmtUnreadCount = 0;
+      return target;
+    }
+
+    let thread = this.data.chatThreads.find(t => t.id === threadId);
+    if (!thread) thread = this.data.chatThreads[0];
+    if (thread) {
+      this.applyDemoReadState(thread, role);
+      this.saveState();
+    }
+    return thread;
+  }
+
+  /* ---- demo-mode helpers kept local so the sample clinic still behaves offline ---- */
+  buildDemoMessage(thread, messageData) {
     const timeFormatted = 'Today at ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-
     const senderRole = messageData.senderRole || this.data.currentUser.role;
     const senderName = messageData.senderName || this.data.currentUser.name;
 
-    const newMsg = {
+    return {
       id: 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
       senderRole: senderRole,
       senderName: senderName,
@@ -585,11 +931,9 @@ class MaisonState {
         url: att.url || ''
       }))
     };
+  }
 
-    thread.messages.push(newMsg);
-    thread.lastUpdated = 'Just now';
-
-    // Track unread counts per recipient role
+  applyDemoUnread(thread, senderRole) {
     if (senderRole === 'patient') {
       thread.doctorUnreadCount = (thread.doctorUnreadCount || 0) + 1;
       thread.mgmtUnreadCount = (thread.mgmtUnreadCount || 0) + 1;
@@ -602,50 +946,39 @@ class MaisonState {
       thread.patientUnreadCount = (thread.patientUnreadCount || 0) + 1;
       thread.doctorUnreadCount = (thread.doctorUnreadCount || 0) + 1;
     }
-
-    this.addNotification({
-      title: `New message from ${senderName}`,
-      message: newMsg.text ? (newMsg.text.length > 60 ? newMsg.text.substring(0, 60) + '...' : newMsg.text) : 'Attached ' + newMsg.attachments.length + ' file(s)',
-      type: 'info'
-    });
-
-    this.saveState();
-    return newMsg;
   }
 
-  markThreadRead(threadId, role = 'patient') {
-    let thread = this.data.chatThreads.find(t => t.id === threadId);
-    if (!thread) thread = this.data.chatThreads[0];
-    if (thread) {
-      if (role === 'patient') {
-        thread.unreadCount = 0;
-        thread.patientUnreadCount = 0;
-        if (thread.messages) {
-          thread.messages.forEach(m => {
-            if (m.senderRole !== 'patient') m.readByPatient = true;
-          });
-        }
-      } else if (role === 'doctor') {
-        thread.doctorUnreadCount = 0;
-        if (thread.messages) {
-          thread.messages.forEach(m => {
-            if (m.senderRole !== 'doctor') m.readByDoctor = true;
-          });
-        }
-      } else if (role === 'management' || role === 'mgmt') {
-        thread.mgmtUnreadCount = 0;
-        if (thread.messages) {
-          thread.messages.forEach(m => {
-            if (m.senderRole !== 'management') m.readByMgmt = true;
-          });
-        }
+  applyDemoReadState(thread, role) {
+    if (role === 'patient') {
+      thread.unreadCount = 0;
+      thread.patientUnreadCount = 0;
+      if (thread.messages) {
+        thread.messages.forEach(m => {
+          if (m.senderRole !== 'patient') m.readByPatient = true;
+        });
       }
-      this.saveState();
+    } else if (role === 'doctor') {
+      thread.doctorUnreadCount = 0;
+      if (thread.messages) {
+        thread.messages.forEach(m => {
+          if (m.senderRole !== 'doctor') m.readByDoctor = true;
+        });
+      }
+    } else if (role === 'management' || role === 'mgmt') {
+      thread.mgmtUnreadCount = 0;
+      if (thread.messages) {
+        thread.messages.forEach(m => {
+          if (m.senderRole !== 'management') m.readByMgmt = true;
+        });
+      }
     }
-    return thread;
   }
 
+  /* There is no POST /api/notifications: notices are written by the server as a side
+   * effect of the action that caused them, so live callers refresh instead of inventing one. */
   addNotification(notif) {
+    if (this.live) return null;
+
     const item = {
       id: 'notif-' + Date.now(),
       title: notif.title,
@@ -662,21 +995,58 @@ class MaisonState {
     return item;
   }
 
-  markAllNotificationsRead() {
+  async markNotificationRead(id) {
+    const item = (this.data.notifications || []).find(n => n.id === id);
+    if (!item) return null;
+    if (this.live) {
+      await this.api.markNotificationRead(id);
+    }
+    item.read = true;
+    this.saveState();
+    return item;
+  }
+
+  async markAllNotificationsRead() {
+    if (this.live) await this.api.markAllNotificationsRead();
     this.data.notifications.forEach(n => n.read = true);
     this.saveState();
   }
 
-  removeNotification(id) {
+  async removeNotification(id) {
+    if (this.live) {
+      await this.api.clearNotification(id);
+    }
     this.data.notifications = (this.data.notifications || []).filter(n => n.id !== id);
     this.saveState();
     return this.data.notifications;
   }
 
-  clearAllNotifications() {
+  async clearAllNotifications() {
+    if (this.live) await this.api.clearAllNotifications();
     this.data.notifications = [];
     this.saveState();
     return this.data.notifications;
+  }
+
+  /* Sanctuary concierge requests are persisted as a message in the patient's own
+   * care conversation, which is the only staff-visible channel the API exposes. */
+  async requestConciergeService(serviceName) {
+    if (!this.live) {
+      const item = this.addNotification({
+        title: 'Concierge Privilege Requested',
+        message: `Sanctuary service "${serviceName}" scheduled for your Studio Suite visit.`,
+        type: 'reminder'
+      });
+      return item;
+    }
+    const thread = (this.data.chatThreads || [])[0];
+    if (!thread) throw new Error('Open a care conversation first.');
+    const result = await this.addMessage(thread.id, {
+      text: `Concierge request: ${serviceName} for my upcoming visit.`,
+      type: 'standard'
+    });
+    await this.refreshNotifications().catch(() => {});
+    return result.message;
   }
 }
 

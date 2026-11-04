@@ -81,6 +81,11 @@
   padding: 0;
 }
 
+/* Layout classes below set display:grid/flex, which would otherwise keep [hidden] sections visible. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: 16px;
@@ -103,7 +108,8 @@ body {
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  /* clip (not hidden): hidden would make <body> the sticky header's scroll container and stop it pinning. */
+  overflow-x: clip;
 }
 
 /* Typography Defaults */

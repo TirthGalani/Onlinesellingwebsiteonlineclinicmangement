@@ -17,6 +17,9 @@
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
 
+  <!-- API client (mounted before the store, which reads window.maisonApi at construction) -->
+  <script src="js/api.js"></script>
+
   <!-- Core Data Store (Mounted early in head so window.maisonStore is ready before DOM elements) -->
   <script src="js/data.js"></script>
 </head>
@@ -145,12 +148,12 @@
       </div>
     </div>
 
-    <!-- Session & Prototype Controls -->
+    <!-- Session & Data Controls -->
     <div class="sidebar-section" style="margin-top: auto; border-top: 1px solid var(--color-ivory-border); padding-top: 1rem;">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-        <span class="luxury-crest-badge" style="font-size: 0.68rem;">Prototype Session</span>
-        <button class="demo-reset-btn" id="resetDemoBtn" onclick="window.maisonApp.resetDemoData(); window.maisonApp.closeSidebar();" style="font-size: 0.75rem;">
-          <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> Reset Data
+        <span class="luxury-crest-badge" id="dataSourceBadge" style="font-size: 0.68rem;">Demo data</span>
+        <button class="demo-reset-btn" id="resetDemoBtn" onclick="window.maisonApp.refreshWorkspace(); window.maisonApp.closeSidebar();" style="font-size: 0.75rem;">
+          <i data-lucide="rotate-ccw" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i> <span>Reset demo data</span>
         </button>
       </div>
 
@@ -617,11 +620,11 @@
             </div>
           </div>
           <form id="patientBookForm" onsubmit="window.maisonApp.handleBookingSubmit(event)">
-            <div style="font-size: 0.76rem; color: #526356; background: var(--color-gold-light); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--color-gold-border); margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+            <div id="inlineBookDemoNotice" style="font-size: 0.76rem; color: #526356; background: var(--color-gold-light); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--color-gold-border); margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
               <i data-lucide="info" style="width: 14px; height: 14px; color: var(--color-gold-dark); flex-shrink: 0;"></i>
               <span><strong>Prototype Demo:</strong> Booking requests are saved locally in your browser session and immediately sync across Doctor and Management workspaces.</span>
             </div>
-            <div class="form-row-2">
+            <div class="form-row-2" id="inlineBookIdentityField">
               <div class="form-group">
                 <label class="form-label" for="bookPatientName">Full Name</label>
                 <input type="text" class="form-control" id="bookPatientName" required value="Olivia Sterling">
@@ -831,8 +834,19 @@
               <input type="hidden" id="selectedStarRating" value="5">
             </div>
 
+            <div class="form-group" id="reviewVisitField" hidden>
+              <label class="form-label" for="reviewAppointmentId">Visit Being Reviewed</label>
+              <select class="form-control" id="reviewAppointmentId">
+                <option value="">Choose one of your completed visits…</option>
+              </select>
+              <div id="reviewVisitHint" style="display: none; margin-top: 0.5rem; font-size: 0.8rem; color: #738479; background: var(--color-ivory-soft); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border);">
+                Reviews are tied to a visit that has already been completed. Once a clinician marks a
+                appointment as completed, it appears here.
+              </div>
+            </div>
+
             <div class="form-row-2">
-              <div class="form-group">
+              <div class="form-group" id="reviewAuthorField">
                 <label class="form-label" for="reviewAuthorName">Your Name</label>
                 <input type="text" class="form-control" id="reviewAuthorName" required value="Olivia Sterling">
               </div>
@@ -1351,18 +1365,92 @@
           <i data-lucide="sparkles" style="width: 24px; height: 24px;"></i>
         </div>
         <div style="margin-bottom: 0.35rem;">
-          <span class="luxury-crest-badge" style="background: rgba(194, 162, 115, 0.15); font-size: 0.68rem;">
+          <span class="luxury-crest-badge" id="authModeBadge" style="background: rgba(194, 162, 115, 0.15); font-size: 0.68rem;">
             <i data-lucide="check-circle" style="width: 11px; height: 11px;"></i> Direct Workspace Access
           </span>
         </div>
-        <h3 id="loginModalTitle" style="font-size: 1.5rem;">Switch Workspace Profile</h3>
-        <p style="font-size: 0.82rem; color: var(--color-ivory-muted);">Select any role to instantly explore the clinic platform without login or password</p>
+        <h3 id="loginModalTitle" style="font-size: 1.5rem;">Sign in to your clinic workspace</h3>
+        <p id="loginModalSubtitle" style="font-size: 0.82rem; color: var(--color-ivory-muted);">Your email and password open the workspace your account is authorised for.</p>
       </div>
 
-      <!-- 1-Click Role Profiles List -->
-      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <!-- Signed-in account panel -->
+      <div id="signedInPanel" hidden style="border: 1px solid var(--color-sand-dark); border-radius: var(--radius-md); padding: 1rem; background: #FFFFFF;">
+        <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem;">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="" class="user-avatar" id="sessionUserAvatar" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;">
+          <div style="flex: 1; overflow: hidden;">
+            <div style="font-weight: 700; font-size: 0.92rem; color: var(--color-forest-dark);" id="sessionUserLabel">&nbsp;</div>
+            <div style="font-size: 0.76rem; color: var(--color-ivory-muted);" id="sessionUserRoleLabel">&nbsp;</div>
+          </div>
+        </div>
+        <button type="button" class="btn-secondary" id="signOutBtn" onclick="window.maisonApp.handleSignOut()" style="width: 100%; justify-content: center;">
+          <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+          <span>Sign out</span>
+        </button>
+      </div>
+
+      <!-- Credential forms -->
+      <div id="authFormPanel">
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.1rem;">
+          <button type="button" class="btn-primary auth-tab-btn active" id="tabSignInBtn" onclick="window.maisonApp.toggleAuthTab('signin')" style="flex: 1; justify-content: center;">Sign in</button>
+          <button type="button" class="btn-secondary auth-tab-btn" id="tabCreateAccountBtn" onclick="window.maisonApp.toggleAuthTab('create')" style="flex: 1; justify-content: center;">Create account</button>
+        </div>
+
+        <form id="signInForm" onsubmit="window.maisonApp.handleSignInSubmit(event)" style="display: flex; flex-direction: column; gap: 0.85rem;">
+          <div>
+            <label class="form-label" for="loginEmail">Email address</label>
+            <input type="email" class="form-control" id="loginEmail" autocomplete="username" placeholder="you@example.com" required>
+          </div>
+          <div>
+            <label class="form-label" for="loginPassword">Password</label>
+            <input type="password" class="form-control" id="loginPassword" autocomplete="current-password" placeholder="Your password" required>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+            <i data-lucide="log-in" style="width: 15px; height: 15px;"></i>
+            <span>Sign in securely</span>
+          </button>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <a href="#" onclick="window.maisonApp.handleForgotPassword(event); return false;" style="font-size: 0.75rem; color: var(--color-ivory-muted);">Forgot password?</a>
+            <button type="button" class="btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.72rem;" onclick="window.maisonApp.useDemoCredentials()" title="Fill the sample clinic credentials">Use demo account</button>
+          </div>
+        </form>
+
+        <form id="createAccountForm" onsubmit="window.maisonApp.handleCreateAccountSubmit(event)" style="display: none; flex-direction: column; gap: 0.85rem;">
+          <div id="patientSignUpFields">
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <div>
+                <label class="form-label" for="signupName">Full name</label>
+                <input type="text" class="form-control" id="signupName" autocomplete="name" placeholder="As on your clinic record" required>
+              </div>
+              <div>
+                <label class="form-label" for="signupEmail">Email address</label>
+                <input type="email" class="form-control" id="signupEmail" autocomplete="username" placeholder="you@example.com" required>
+              </div>
+              <div>
+                <label class="form-label" for="signupPhone">Mobile (for reminders)</label>
+                <input type="tel" class="form-control" id="signupPhone" autocomplete="tel" placeholder="+1 555 000 0000">
+              </div>
+              <div>
+                <label class="form-label" for="signupPassword">Password</label>
+                <input type="password" class="form-control" id="signupPassword" autocomplete="new-password" placeholder="At least 10 characters" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 0.85rem;">
+              <i data-lucide="user-plus" style="width: 15px; height: 15px;"></i>
+              <span>Create patient account</span>
+            </button>
+          </div>
+          <div id="staffSignUpNotice" hidden style="font-size: 0.8rem; color: #738479; background: var(--color-ivory-soft); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border);">
+            Clinician and management accounts are provisioned by clinic administration. Ask your operations desk for credentials.
+          </div>
+        </form>
+
+        <p id="authError" role="alert" style="display: none; margin-top: 0.85rem; font-size: 0.78rem; color: #B3261E;"></p>
+      </div>
+
+      <!-- 1-Click Role Profiles List (demo only) -->
+      <div id="demoRoleCards" style="display: flex; flex-direction: column; gap: 0.75rem;">
         <!-- Patient Profile -->
-        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('patient'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+        <button type="button" class="btn-profile-switch auth-role-card" onclick="window.maisonApp.selectRole('patient'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
           <div style="display: flex; align-items: center; gap: 0.85rem;">
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Olivia Sterling" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
             <div>
@@ -1374,7 +1462,7 @@
         </button>
 
         <!-- Doctor Profile -->
-        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('doctor'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+        <button type="button" class="btn-profile-switch auth-role-card" onclick="window.maisonApp.selectRole('doctor'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
           <div style="display: flex; align-items: center; gap: 0.85rem;">
             <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=300&q=80" alt="Dr. Alistair Vance" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
             <div>
@@ -1386,7 +1474,7 @@
         </button>
 
         <!-- Management Profile -->
-        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('management'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+        <button type="button" class="btn-profile-switch auth-role-card" onclick="window.maisonApp.selectRole('management'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
           <div style="display: flex; align-items: center; gap: 0.85rem;">
             <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80" alt="Genevieve Laurent" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
             <div>
@@ -1398,8 +1486,9 @@
         </button>
       </div>
 
-      <div style="margin-top: 1.25rem; text-align: center; font-size: 0.74rem; color: #738479; background: var(--color-ivory-soft); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border);">
-        <i data-lucide="shield-check" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px; color: var(--color-forest-dark);"></i> Instant workspace access &mdash; no login or password required.
+      <div id="authDemoNotice" style="margin-top: 1.25rem; text-align: center; font-size: 0.74rem; color: #738479; background: var(--color-ivory-soft); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border);">
+        <i data-lucide="shield-check" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px; color: var(--color-forest-dark);"></i>
+        The role cards below are the offline preview &mdash; they only appear when the clinic service is not running.
       </div>
     </div>
   </div>
@@ -1420,13 +1509,13 @@
         <p style="font-size: 0.85rem; color: var(--color-ivory-muted);">Your request will instantly synchronize with your patient schedule and the clinic management queue.</p>
       </div>
 
-      <div style="font-size: 0.76rem; color: #526356; background: var(--color-gold-light); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--color-gold-border); margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+      <div id="bookDemoNotice" style="font-size: 0.76rem; color: #526356; background: var(--color-gold-light); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--color-gold-border); margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
         <i data-lucide="info" style="width: 14px; height: 14px; color: var(--color-gold-dark); flex-shrink: 0;"></i>
         <span><strong>Prototype Demo:</strong> Booking requests are saved in your local browser session and immediately sync across Doctor and Management workspaces.</span>
       </div>
 
       <form onsubmit="window.maisonApp.handleBookingSubmit(event)">
-        <div class="form-row-2">
+        <div class="form-row-2" id="modalBookIdentityField">
           <div class="form-group">
             <label class="form-label" for="modalBookName">Patient Full Name</label>
             <input type="text" class="form-control" id="modalBookName" required value="Olivia Sterling">
@@ -1435,6 +1524,13 @@
             <label class="form-label" for="modalBookContact">Email or Phone Number</label>
             <input type="text" class="form-control" id="modalBookContact" required value="olivia@maison.demo">
           </div>
+        </div>
+
+        <div class="form-group" id="modalBookPatientField" hidden>
+          <label class="form-label" for="modalBookPatientId">Patient</label>
+          <select class="form-control" id="modalBookPatientId">
+            <option value="">Choose a patient…</option>
+          </select>
         </div>
 
         <div class="form-row-2">

@@ -25,9 +25,9 @@
       this.currentWorkspace = (this.store.data && this.store.data.currentUser && this.store.data.currentUser.role) || 'patient';
       this.currentSection = 'overview';
       this.loginModalRole = 'patient';
-      this.activeDoctorThreadId = 'thread-olivia';
-      this.activeMgmtThreadId = 'thread-olivia';
-      this.activePatientThreadId = 'thread-olivia';
+      this.activeDoctorThreadId = null;
+      this.activeMgmtThreadId = null;
+      this.activePatientThreadId = null;
       this.doctorMsgType = 'standard'; // 'standard' | 'instruction' | 'medicine'
       
       // File attachments staging per workspace
@@ -36,14 +36,6 @@
         doctor: [],
         mgmt: []
       };
-
-      // Message Direction (Outgoing vs Incoming) per workspace
-      this.chatDirections = {
-        patient: 'outgoing', // 'outgoing' | 'incoming'
-        doctor: 'outgoing',
-        mgmt: 'outgoing'
-      };
-      this.autoReplyEnabled = true;
 
       this.init();
     }
@@ -97,9 +89,9 @@
         }
 
         const sidebar = document.getElementById('luxurySidebar');
-        const sidebarToggle = document.getElementById('sidebarToggleBtn');
+        const sidebarTrigger = e.target.closest('#sidebarToggleBtn, #currentRoleBadge');
         if (sidebar && sidebar.classList.contains('open')) {
-          if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+          if (!sidebar.contains(e.target) && !sidebarTrigger) {
             this.closeSidebar();
           }
         }
@@ -121,21 +113,197 @@
         });
       }
 
-      // Reset Demo Data Button
-      const resetBtn = document.getElementById('resetDemoBtn');
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          this.store.resetToDemo();
-          this.showToast('Demo Environment Reset', 'Sample appointments, messages, and reviews restored.', 'info');
-          this.renderAll();
-        });
-      }
-
       // Star Rating Hover & Click Setup
       this.setupStarRating();
 
       // Initial Render
       this.renderAll();
+      this.connectLive();
+    }
+
+    /* The shell paints from the cached demo clinic first, then the live clinic replaces it
+     * as soon as the session is verified — so opening index.html on a static file server
+     * (VS Code Live Server, no /api proxy) still shows the prototype. */
+    async connectLive() {
+      if (!this.store.api) return;
+      let user = null;
+      try {
+        user = await this.store.restoreSession();
+      } catch (error) {
+        if (error.status === 404 || error.status === 0) return; // no API on this host
+        this.showToast('Clinic service unavailable', error.message, 'error');
+        return;
+      }
+      if (!user) {
+        this.enterSignedOut();
+        return;
+      }
+      this.enterWorkspace(user);
+    }
+
+    async refreshWorkspace() {
+      if (this.store.live) {
+        try {
+          await this.store.refresh();
+          this.syncActiveThreads();
+          this.renderAll();
+          this.showToast('Workspace Refreshed', 'Loaded the latest from the clinic database.', 'success');
+          return;
+        } catch (error) {
+          this.handleApiError(error);
+          return;
+        }
+      }
+      this.store.resetToDemo();
+      this.renderAll();
+      this.showToast('Demo Environment Reset', 'Sample appointments, messages, and reviews restored.', 'info');
+    }
+
+    syncActiveThreads() {
+      const threads = this.store.data.chatThreads || [];
+      const first = threads.length ? threads[0].id : null;
+      if (!this.activePatientThreadId || !threads.some(t => t.id === this.activePatientThreadId)) {
+        this.activePatientThreadId = first;
+      }
+      if (!this.activeDoctorThreadId || !threads.some(t => t.id === this.activeDoctorThreadId)) {
+        this.activeDoctorThreadId = first;
+      }
+      if (!this.activeMgmtThreadId || !threads.some(t => t.id === this.activeMgmtThreadId)) {
+        this.activeMgmtThreadId = first;
+      }
+    }
+
+    threadIdForPatient(patientId) {
+      const match = (this.store.data.chatThreads || []).find(thread => thread.patientId === patientId);
+      return match ? match.id : null;
+    }
+
+    enterWorkspace(user) {
+      this.currentWorkspace = user.role;
+      this.syncActiveThreads();
+      this.renderAuthChrome();
+      this.selectRole(user.role);
+      this.showToast('Signed In', `Welcome back, ${user.name}.`, 'success');
+    }
+
+    enterSignedOut() {
+      document.querySelectorAll('.workspace-shell').forEach(el => el.classList.remove('active'));
+      ['patient', 'doctor', 'management'].forEach(role => {
+        const el = document.getElementById(`workspace-${role}`);
+        if (el) el.style.display = 'none';
+      });
+      this.renderAuthChrome();
+      this.renderHeader();
+      this.openLoginModal();
+    }
+
+    /* One function describes the whole account chrome: with a live session the demo
+     * affordances (role cards, quick switcher, reset) disappear and the workspace is
+     * decided by the signed-in account alone. */
+    renderAuthChrome() {
+      const live = this.store.live;
+      const user = this.store.data.currentUser;
+      const signedIn = live && Boolean(user);
+
+      const set = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+      const show = (id, visible) => {
+        const el = document.getElementById(id);
+        if (el) el.hidden = !visible;
+      };
+
+      show('signedInPanel', signedIn);
+      show('authFormPanel', live && !signedIn);
+      show('demoRoleCards', !live);
+      show('authDemoNotice', !live);
+
+      if (signedIn) {
+        set('sessionUserLabel', user.name);
+        set('sessionUserRoleLabel', `${user.email} • ${user.title}`);
+        const avatar = document.getElementById('sessionUserAvatar');
+        if (avatar) avatar.src = user.avatar;
+      }
+
+      const title = document.getElementById('loginModalTitle');
+      const subtitle = document.getElementById('loginModalSubtitle');
+      if (title) title.textContent = live ? (signedIn ? 'Your account' : 'Sign in to your clinic workspace') : 'Preview the clinic workspaces';
+      if (subtitle) {
+        subtitle.textContent = live
+          ? (signedIn ? 'Your session is active on this device.' : 'Your email and password open the workspace your account is authorised for.')
+          : 'Start the clinic service (npm start) to enable real accounts, or use the preview roles below.';
+      }
+
+      const quickBar = document.getElementById('workspaceQuickBar');
+      if (quickBar) quickBar.style.display = live ? 'none' : '';
+      const sidebarCards = document.querySelectorAll('#luxurySidebar .sidebar-role-card');
+      sidebarCards.forEach(card => { card.hidden = live; });
+
+      const modeBadge = document.getElementById('dataSourceBadge');
+      if (modeBadge) {
+        modeBadge.textContent = live ? 'Live clinic data' : 'Demo data';
+        modeBadge.classList.toggle('live', live);
+      }
+      const resetLabel = document.querySelector('#resetDemoBtn span');
+      if (resetLabel) resetLabel.textContent = live ? 'Refresh live data' : 'Reset demo data';
+
+      const visitPicker = document.getElementById('reviewVisitField');
+      if (visitPicker) visitPicker.hidden = !live;
+      const authorField = document.getElementById('reviewAuthorField');
+      if (authorField) authorField.hidden = live;
+
+      // Live bookings come from the session (or the patient the desk picks), never from a typed name.
+      const isDesk = signedIn && user.role === 'management';
+      show('inlineBookIdentityField', !live);
+      show('inlineBookDemoNotice', !live);
+      show('modalBookIdentityField', !live);
+      show('bookDemoNotice', !live);
+      show('modalBookPatientField', isDesk);
+
+      // The direction switch, sample attachments and simulated replies only exist to demo a
+      // two-sided conversation; with real accounts they would fabricate messages.
+      const display = (selector, visible) => {
+        document.querySelectorAll(selector).forEach(el => { el.style.display = visible ? '' : 'none'; });
+      };
+      display('.direction-btn', !live);
+      display('.quick-attach-pill-btn', !live);
+      display('.quick-sim-reply-btn', !live);
+    }
+
+    handleApiError(error) {
+      // 401 means the cookie no longer identifies a member. 403 means it does, but this
+      // account is not permitted — signing out over a forbidden read would punish the wrong thing.
+      if (error && error.status === 401 && this.store.live) {
+        this.onSignedOut();
+        return;
+      }
+      this.showToast('Action Failed', (error && error.message) || 'The clinic service could not complete that.', 'error');
+    }
+
+    async onSignedOut() {
+      try {
+        await this.store.signOut();
+      } catch (e) {
+        this.store.live = false;
+      }
+      this.enterSignedOut();
+      this.showToast('Session Ended', 'Sign in again to load your clinic workspace.', 'info');
+    }
+
+    /* Every workspace write goes through here so a dead session never leaves the UI
+     * showing rows the server refused to touch. */
+    async runMutation(action, successToast) {
+      try {
+        const result = await action();
+        if (this.store.live) this.syncActiveThreads();
+        this.renderAll();
+        if (successToast) this.showToast(successToast[0], successToast[1], successToast[2] || 'success');
+        return result;
+      } catch (error) {
+        this.handleApiError(error);
+        return null;
+      }
     }
 
     renderIcons() {
@@ -147,9 +315,21 @@
     renderAll() {
       this.renderHeader();
       this.renderNotifications();
+
+      // With no session there is nothing to render into the workspaces, and reading
+      // currentUser below would throw before the sign-in modal is even shown.
+      if (this.store.live && !this.store.data.currentUser) {
+        this.renderIcons();
+        return;
+      }
+
       this.renderPatientWorkspace();
       this.renderDoctorWorkspace();
       this.renderManagementWorkspace();
+      if (this.store.live) {
+        this.syncReviewVisitOptions();
+        this.syncClinicianSelects();
+      }
       this.renderIcons();
     }
 
@@ -158,6 +338,18 @@
     ---------------------------------------------------- */
     renderHeader() {
       const user = this.store.data.currentUser;
+      if (!user) {
+        // Signed out on a live host: the header shows the clinic, not a phantom member.
+        const nameEl = document.getElementById('headerUserName');
+        if (nameEl) nameEl.textContent = 'Sign in';
+        const badge = document.getElementById('currentRoleBadgeText');
+        if (badge) badge.textContent = 'Maison Dental';
+        const short = document.getElementById('currentRoleBadgeShortText');
+        if (short) short.textContent = 'Guest';
+        const unread = document.getElementById('notifCountBadge');
+        if (unread) unread.style.display = 'none';
+        return;
+      }
       const avatarEl = document.getElementById('headerUserAvatar');
       const nameEl = document.getElementById('headerUserName');
       const badgeTextEl = document.getElementById('currentRoleBadgeText');
@@ -210,7 +402,7 @@
       let totalUnread = 0;
       const threads = this.store.data.chatThreads || [];
       if (user.role === 'patient') {
-        const patientThread = threads.find(t => t.id === (this.activePatientThreadId || 'thread-olivia')) || threads[0];
+        const patientThread = threads.find(t => t.id === this.activePatientThreadId) || threads[0];
         totalUnread = patientThread ? (patientThread.patientUnreadCount || patientThread.unreadCount || 0) : 0;
       } else if (user.role === 'doctor') {
         totalUnread = threads.reduce((sum, t) => sum + (t.doctorUnreadCount || 0), 0);
@@ -356,8 +548,21 @@
     }
 
     selectRole(roleKey) {
+      const user = this.store.data.currentUser;
+      if (this.store.live) {
+        if (!user) {
+          this.openLoginModal();
+          return;
+        }
+        // With a session the workspace comes from the account, never from a button.
+        if (roleKey !== user.role) {
+          this.showToast('Not authorised', `${user.name} is signed in to the ${user.title} workspace.`, 'error');
+          roleKey = user.role;
+        }
+      } else {
+        this.store.switchRole(roleKey);
+      }
       this.currentWorkspace = roleKey;
-      this.store.switchRole(roleKey);
 
       // Update luxury sidebar role cards
       document.querySelectorAll('#luxurySidebar .sidebar-role-card').forEach(btn => {
@@ -391,7 +596,9 @@
       this.renderHeader();
       this.renderAll();
 
-      this.showToast('Workspace Switched', `Now viewing as ${this.store.data.currentUser.name} (${this.store.data.currentUser.title})`, 'info');
+      if (!this.store.live) {
+        this.showToast('Workspace Switched', `Now viewing as ${this.store.data.currentUser.name} (${this.store.data.currentUser.title})`, 'info');
+      }
     }
 
     /* ----------------------------------------------------
@@ -412,9 +619,7 @@
     }
 
     resetDemoData() {
-      this.store.resetToDemo();
-      this.showToast('Demo Environment Reset', 'Sample appointments, messages, and reviews restored.', 'info');
-      this.renderAll();
+      this.refreshWorkspace();
     }
 
     /* ----------------------------------------------------
@@ -500,40 +705,54 @@
       `).join('');
     }
 
-    removeNotification(id) {
-      this.store.removeNotification(id);
+    async removeNotification(id) {
+      try {
+        await this.store.removeNotification(id);
+      } catch (error) {
+        return this.handleApiError(error);
+      }
       this.renderNotifications();
       this.showToast('Notification Dismissed', 'Notice removed from panel.', 'info');
     }
 
-    clearAllNotifications() {
-      this.store.clearAllNotifications();
+    async clearAllNotifications() {
+      try {
+        await this.store.clearAllNotifications();
+      } catch (error) {
+        return this.handleApiError(error);
+      }
       this.renderNotifications();
       this.showToast('Notifications Cleared', 'All notices have been cleared.', 'info');
     }
 
-    markNotificationRead(id) {
-      const item = this.store.data.notifications.find(n => n.id === id);
-      if (item) {
-        item.read = true;
-        this.store.saveState();
-        this.renderNotifications();
+    async markNotificationRead(id) {
+      try {
+        await this.store.markNotificationRead(id);
+      } catch (error) {
+        return this.handleApiError(error);
       }
+      this.renderNotifications();
     }
 
-    markAllNotificationsRead() {
-      this.store.markAllNotificationsRead();
+    async markAllNotificationsRead() {
+      try {
+        await this.store.markAllNotificationsRead();
+      } catch (error) {
+        return this.handleApiError(error);
+      }
       this.renderNotifications();
-      this.showToast('Notifications Cleared', 'All notices marked as read.', 'info');
+      this.showToast('Notifications Read', 'All notices marked as read.', 'info');
     }
 
     /* ----------------------------------------------------
        1. PATIENT PORTAL
     ---------------------------------------------------- */
     renderPatientWorkspace() {
-      const appointments = this.store.data.appointments;
-      const patientEmail = 'olivia@maison.demo';
-      const patientApts = appointments.filter(a => a.patientEmail === patientEmail || a.patientName === 'Olivia Sterling');
+      // /api/appointments already returns only this patient's rows for a patient session.
+      const appointments = this.store.live
+        ? this.store.data.appointments
+        : this.store.data.appointments.filter(a => a.patientEmail === 'olivia@maison.demo' || a.patientName === 'Olivia Sterling');
+      const patientApts = appointments;
 
       // Overview Upcoming Mini List
       const overviewListEl = document.getElementById('patientOverviewAppointmentsList');
@@ -659,6 +878,18 @@
       return text || (attachments.length ? `${attachments.length} file(s) attached` : 'Message sent');
     }
 
+    /* The API records only that another member opened a message, not which one, so a
+     * live session reports "Read" rather than naming a clinician it cannot prove. */
+    readLabelFor(demoLabel) {
+      return this.store.live ? 'Read' : demoLabel;
+    }
+
+    participantsLine(thread) {
+      const clinicians = (this.store.data.dentists || []).slice(0, 2).map(dentist => this.escapeHtml(dentist.name));
+      const concierge = this.store.live ? 'Clinic concierge' : 'Genevieve Laurent (Concierge)';
+      return `Participants: <strong>${this.escapeHtml(thread.patientName)}</strong> (Patient)${clinicians.length ? `, ${clinicians.join(', ')}` : ''}, <strong>${this.escapeHtml(concierge)}</strong>`;
+    }
+
     renderPatientChat() {
       const allThreads = this.store.data.chatThreads || [];
       let threads = allThreads;
@@ -708,7 +939,7 @@
         recipientTitleEl.innerHTML = `
           <span style="font-size: 1.05rem; font-weight: 600; color: var(--color-forest-dark);">Patient: ${this.escapeHtml(activeThread.patientName)}</span>
           <div style="font-size: 0.72rem; color: #526056; margin-top: 2px;">
-            Participants: <strong>${this.escapeHtml(activeThread.patientName)}</strong> (Patient), <strong>Dr. Alistair Vance, DDS</strong>, <strong>Genevieve Laurent</strong> (Concierge)
+            ${this.participantsLine(activeThread)}
           </div>
         `;
       }
@@ -775,13 +1006,13 @@
         let readLabel = 'Delivered';
         if (viewerRole === 'patient') {
           isRead = !!(m.read || m.readByDoctor || m.readByMgmt);
-          readLabel = isRead ? 'Read by Dr. Vance' : 'Delivered';
+          readLabel = isRead ? this.readLabelFor('Read by Dr. Vance') : 'Delivered';
         } else if (viewerRole === 'doctor') {
           isRead = !!(m.read || m.readByPatient);
-          readLabel = isRead ? 'Read by Patient' : 'Delivered';
+          readLabel = isRead ? this.readLabelFor('Read by Patient') : 'Delivered';
         } else {
           isRead = !!(m.read || m.readByPatient || m.readByDoctor);
-          readLabel = isRead ? 'Read by Recipient' : 'Delivered';
+          readLabel = isRead ? this.readLabelFor('Read by Recipient') : 'Delivered';
         }
 
         if (isRead) {
@@ -831,27 +1062,38 @@
     }
 
     switchChatThread(threadId, workspaceKey) {
-      if (workspaceKey === 'patient') {
-        this.activePatientThreadId = threadId;
-        this.store.markThreadRead(threadId, 'patient');
-        this.renderPatientChat();
-      } else if (workspaceKey === 'doctor') {
-        this.activeDoctorThreadId = threadId;
-        this.store.markThreadRead(threadId, 'doctor');
-        this.renderDoctorChat();
-      } else if (workspaceKey === 'mgmt' || workspaceKey === 'management') {
-        this.activeMgmtThreadId = threadId;
-        this.store.markThreadRead(threadId, 'management');
-        this.renderManagementWorkspace();
+      const isPatient = workspaceKey === 'patient';
+      const isDoctor = workspaceKey === 'doctor';
+      if (isPatient) this.activePatientThreadId = threadId;
+      else if (isDoctor) this.activeDoctorThreadId = threadId;
+      else this.activeMgmtThreadId = threadId;
+
+      const role = isPatient ? 'patient' : (isDoctor ? 'doctor' : 'management');
+      const redraw = () => {
+        if (isPatient) this.renderPatientChat();
+        else if (isDoctor) this.renderDoctorChat();
+        else this.renderManagementWorkspace();
+        this.renderHeader();
+        this.closeMobileThreads();
+        this.renderIcons();
+        if (isDoctor || !isPatient) this.scrollChatToTop(workspaceKey);
+        else this.scrollChatToBottom(workspaceKey);
+      };
+
+      if (this.store.live) {
+        // Live threads load their messages on demand: the workspace list only carries
+        // the unread count and latest activity, not the conversation itself.
+        // Mark read first, otherwise the thread fetch races back the old unread count.
+        this.store.markThreadRead(threadId, role)
+          .catch(() => null)
+          .then(() => this.store.openThread(threadId))
+          .then(redraw)
+          .catch(error => this.handleApiError(error));
+        return;
       }
-      this.renderHeader();
-      this.closeMobileThreads();
-      this.renderIcons();
-      if (workspaceKey === 'doctor' || workspaceKey === 'mgmt' || workspaceKey === 'management') {
-        this.scrollChatToTop(workspaceKey);
-      } else {
-        this.scrollChatToBottom(workspaceKey);
-      }
+
+      this.store.markThreadRead(threadId, role);
+      redraw();
     }
 
     renderPatientReviews() {
@@ -885,12 +1127,13 @@
        2. DOCTOR WORKSPACE
     ---------------------------------------------------- */
     renderDoctorWorkspace() {
-      const appointments = this.store.data.appointments;
       const doctorScheduleEl = document.getElementById('doctorTodayScheduleList');
       const countEl = document.getElementById('doctorTodayAppointmentsCount');
 
-      // Filter for Dr. Vance
-      const doctorApts = appointments.filter(a => a.dentist.includes('Vance'));
+      // A doctor session only receives their own caseload from the API, so live rows need no filter.
+      const doctorApts = this.store.live
+        ? this.store.data.appointments
+        : this.store.data.appointments.filter(a => a.dentist.includes('Vance'));
 
       if (countEl) countEl.textContent = doctorApts.length;
 
@@ -915,7 +1158,7 @@
               </div>
               <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="status-badge status-${a.status.toLowerCase()}">${a.status}</span>
-                <button type="button" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" title="Open conversation" onclick="window.maisonApp.openPatientChatFromDoctor('${this.escapeHtml(a.patientName)}')">
+                <button type="button" class="btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" title="Open conversation" onclick="window.maisonApp.openPatientChatFromDoctor('${this.escapeHtml(this.threadIdForPatient(a.patientId) || '')}', '${this.escapeHtml(a.patientName)}')">
                   <i data-lucide="message-square" style="width: 13px; height: 13px;"></i>
                 </button>
               </div>
@@ -938,17 +1181,30 @@
     }
 
     filterDoctorPatients(query) {
+      const container = document.getElementById('doctorPatientSearchResults');
+      if (!container) return;
+      clearTimeout(this._patientSearchTimer);
+      if (this.store.live) {
+        this._patientSearchTimer = setTimeout(() => this.renderPatientDirectory(query), 250);
+        return;
+      }
+      this.renderPatientDirectory(query);
+    }
+
+    async renderPatientDirectory(query) {
       const resultsContainer = document.getElementById('doctorPatientSearchResults');
       if (!resultsContainer) return;
 
-      const q = (query || '').toLowerCase().trim();
-      const uniquePatients = [
-        { name: 'Olivia Sterling', email: 'olivia@maison.demo', service: 'Handcrafted Porcelain Veneers', threadId: 'thread-olivia', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
-        { name: 'Alexander Hayes', email: 'alexander.hayes@demo.luxury', service: 'Bespoke Smile Architecture', threadId: 'thread-alexander', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' },
-        { name: 'Eleanor Vance-Moreau', email: 'eleanor.v@demo.luxury', service: 'Invisalign Diamond Precision', threadId: 'thread-eleanor', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80' }
-      ];
+      // /api/users is a staff endpoint; the shell renders every workspace, so a patient session
+      // must not ask for the directory or it would be told off for reading the whole clinic list.
+      if (this.store.live && this.store.role === 'patient') {
+        resultsContainer.innerHTML = '';
+        return;
+      }
 
-      const matches = uniquePatients.filter(p => p.name.toLowerCase().includes(q) || p.service.toLowerCase().includes(q));
+      const q = (query || '').toLowerCase().trim();
+      const people = this.store.live ? await this.livePatientDirectory() : this.demoPatientDirectory();
+      const matches = people.filter(p => p.name.toLowerCase().includes(q) || String(p.service).toLowerCase().includes(q));
 
       if (matches.length === 0) {
         resultsContainer.innerHTML = '<div style="padding: 1rem; color: #8E9F92; font-size: 0.85rem; text-align: center;">No matching patient charts found.</div>';
@@ -958,13 +1214,14 @@
       resultsContainer.innerHTML = matches.map(p => `
         <div class="appointment-item" style="padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
           <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <img src="${p.avatar}" class="user-avatar" alt="${this.escapeHtml(p.name)}">
+            <img src="${this.escapeHtml(p.avatar)}" class="user-avatar" alt="${this.escapeHtml(p.name)}">
             <div>
               <div style="font-size: 0.88rem; font-weight: 600; color: var(--color-forest-dark);">${this.escapeHtml(p.name)}</div>
               <div style="font-size: 0.72rem; color: #7B8B80;">${this.escapeHtml(p.service)}</div>
+              <div style="font-size: 0.68rem; color: #A0B0A5;">${this.escapeHtml(p.meta)}</div>
             </div>
           </div>
-          <button type="button" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.74rem;" onclick="window.maisonApp.openPatientChatFromDoctor('${p.name}')">
+          <button type="button" class="btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.74rem;" onclick="window.maisonApp.openPatientChatFromDoctor('${this.escapeHtml(p.threadId || '')}', '${this.escapeHtml(p.name)}')">
             <span>Open Chart</span>
           </button>
         </div>
@@ -972,15 +1229,66 @@
       this.renderIcons();
     }
 
-    openPatientChatFromDoctor(patientName) {
-      const match = this.store.data.chatThreads.find(t => t.patientName.toLowerCase().includes(patientName.toLowerCase()));
-      if (match) {
-        this.activeDoctorThreadId = match.id;
-        this.renderDoctorWorkspace();
-        const chat = document.querySelector('#workspace-doctor .chat-container');
-        if (chat) chat.scrollIntoView({ behavior: 'smooth' });
-        this.showToast('Clinical Chart Opened', `Loaded live thread for ${match.patientName}`, 'info');
+    demoPatientDirectory() {
+      return [
+        { name: 'Olivia Sterling', service: 'Handcrafted Porcelain Veneers', threadId: 'thread-olivia', meta: 'Demo patient', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80' },
+        { name: 'Alexander Hayes', service: 'Bespoke Smile Architecture', threadId: 'thread-alexander', meta: 'Demo patient', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80' },
+        { name: 'Eleanor Vance-Moreau', service: 'Invisalign Diamond Precision', threadId: 'thread-eleanor', meta: 'Demo patient', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80' }
+      ];
+    }
+
+    async livePatientDirectory() {
+      if (!this.patientDirectory) {
+        try {
+          this.patientDirectory = await this.store.api.patients('');
+        } catch (error) {
+          this.handleApiError(error);
+          this.patientDirectory = [];
+        }
       }
+      const threadsByPatient = new Map((this.store.data.chatThreads || []).map(thread => [thread.patientId, thread]));
+      const aptByPatient = new Map();
+      (this.store.data.appointments || []).forEach(apt => {
+        if (!aptByPatient.has(apt.patientId)) aptByPatient.set(apt.patientId, apt);
+      });
+      return this.patientDirectory.map(patient => {
+        const thread = threadsByPatient.get(patient.id);
+        const apt = aptByPatient.get(patient.id);
+        return {
+          id: patient.id,
+          name: patient.name,
+          avatar: patient.avatar,
+          threadId: thread ? thread.id : '',
+          service: apt ? apt.service : (thread ? 'Care conversation' : 'No treatment booked yet'),
+          meta: patient.appointmentCount
+            ? `${patient.appointmentCount} visit${patient.appointmentCount === 1 ? '' : 's'}${patient.lastVisit ? ` • last ${patient.lastVisit}` : ''}`
+            : 'No visits recorded'
+        };
+      });
+    }
+
+    async openPatientChatFromDoctor(threadId, patientName) {
+      let match = threadId ? (this.store.data.chatThreads || []).find(t => t.id === threadId) : null;
+      if (!match && patientName) {
+        match = (this.store.data.chatThreads || []).find(t => t.patientName.toLowerCase().includes(patientName.toLowerCase()));
+      }
+      if (!match) {
+        this.showToast('No conversation yet', `${patientName || 'This patient'} has no care conversation open.`, 'info');
+        return;
+      }
+
+      this.activeDoctorThreadId = match.id;
+      if (this.store.live) {
+        try {
+          await this.store.openThread(match.id);
+        } catch (error) {
+          this.handleApiError(error);
+        }
+      }
+      this.renderDoctorWorkspace();
+      const chat = document.querySelector('#workspace-doctor .chat-container');
+      if (chat) chat.scrollIntoView({ behavior: 'smooth' });
+      this.showToast('Clinical Chart Opened', `Loaded the conversation for ${match.patientName}`, 'info');
     }
 
     renderDoctorChat() {
@@ -1031,7 +1339,7 @@
         activePatientLabel.innerHTML = `
           <span style="font-size: 1.05rem; font-weight: 600; color: var(--color-forest-dark);">Patient: ${this.escapeHtml(activeThread.patientName)}</span>
           <div style="font-size: 0.72rem; color: #526056; margin-top: 2px;">
-            Participants: <strong>${this.escapeHtml(activeThread.patientName)}</strong> (Patient), <strong>Dr. Alistair Vance, DDS</strong>, <strong>Genevieve Laurent</strong> (Concierge)
+            ${this.participantsLine(activeThread)}
           </div>
         `;
       }
@@ -1207,7 +1515,7 @@
         activeTitleEl.innerHTML = `
           <span style="font-size: 1.05rem; font-weight: 600; color: var(--color-forest-dark);">Patient: ${this.escapeHtml(activeThread.patientName)}</span>
           <div style="font-size: 0.72rem; color: #526056; margin-top: 2px;">
-            Participants: <strong>${this.escapeHtml(activeThread.patientName)}</strong> (Patient), <strong>Dr. Alistair Vance, DDS</strong>, <strong>Genevieve Laurent</strong> (Concierge)
+            ${this.participantsLine(activeThread)}
           </div>
         `;
       }
@@ -1228,28 +1536,28 @@
       }
     }
 
-    confirmAppointment(aptId) {
-      const apt = this.store.confirmAppointment(aptId);
+    async confirmAppointment(aptId) {
+      const apt = await this.runMutation(() => this.store.confirmAppointment(aptId));
       if (apt) {
         this.showToast('Appointment Confirmed', `Confirmed for ${apt.patientName} on ${new Date(apt.date).toLocaleDateString()}. Notification dispatched.`, 'success');
-        this.renderAll();
       }
     }
 
-    cancelAppointment(aptId) {
-      const apt = this.store.cancelAppointment(aptId);
+    async cancelAppointment(aptId) {
+      const apt = await this.runMutation(() => this.store.cancelAppointment(aptId));
       if (!apt) {
         this.showToast('Appointment Not Cancellable', 'Completed or already cancelled appointments cannot be cancelled.', 'error');
         return;
       }
       this.showToast('Appointment Cancelled', `${apt.patientName}'s appointment has been cancelled.`, 'success');
-      this.renderAll();
     }
 
-    sendAppointmentReminders() {
-      const totalSent = this.store.sendReminders();
-      this.showToast('Reminders Dispatched', `Automated calendar invites and luxury SMS reminders sent to upcoming patients (Total: ${totalSent}).`, 'success');
-      this.renderAll();
+    async sendAppointmentReminders() {
+      const summary = await this.runMutation(() => this.store.sendReminders());
+      if (!summary) return;
+      this.showToast('Reminders Dispatched',
+        `Processed ${summary.processed} upcoming visit(s): ${summary.sent} delivered, ${summary.skipped} skipped, ${summary.failed} failed.`,
+        summary.failed ? 'error' : 'success');
     }
 
     /* ----------------------------------------------------
@@ -1260,9 +1568,44 @@
       if (modal) {
         modal.classList.add('active');
       }
+      if (this.store.live) this.syncLiveBookingOptions();
     }
 
-    handleBookingSubmit(event) {
+    /* The endpoint resolves a clinician by id and, for the front desk, a patient by id, so the
+     * live booking selects are built from the roster and the patient directory. */
+    syncClinicianSelects() {
+      const roster = this.store.data.dentists || [];
+      if (!roster.length) return;
+      const options = roster
+        .map(d => `<option value="${this.escapeHtml(d.name)}">${this.escapeHtml(d.name)}</option>`)
+        .join('');
+      ['modalBookDentist', 'bookDentist'].forEach((id) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const previous = select.value;
+        select.innerHTML = options;
+        if (roster.some(d => d.name === previous)) select.value = previous;
+      });
+    }
+
+    async syncLiveBookingOptions() {
+      this.syncClinicianSelects();
+
+      const deskSelect = document.getElementById('modalBookPatientId');
+      const user = this.store.data.currentUser;
+      if (deskSelect && user && user.role === 'management') {
+        try {
+          const patients = await this.store.api.patients();
+          deskSelect.innerHTML = '<option value="">Choose a patient…</option>' + patients
+            .map(p => `<option value="${this.escapeHtml(p.id)}">${this.escapeHtml(p.name)} — ${this.escapeHtml(p.email || '')}</option>`)
+            .join('');
+        } catch (error) {
+          this.handleApiError(error);
+        }
+      }
+    }
+
+    async handleBookingSubmit(event) {
       event.preventDefault();
 
       const getVal = (id) => {
@@ -1289,12 +1632,44 @@
         notes = getVal('modalBookNotes');
       }
 
-      if (!name || !date || !service) {
-        this.showToast('Missing Details', 'Please complete the patient name, date, and service.', 'error');
+      if (!service) {
+        this.showToast('Missing Details', 'Please choose a service and a preferred time.', 'error');
         return;
       }
 
-      const newApt = this.store.addAppointment({
+      if (this.store.live) {
+        const user = this.store.data.currentUser;
+        if (user.role === 'doctor') {
+          this.showToast('Booking Is Handled By The Desk', 'Clinicians record the care plan; the concierge desk creates the appointment.', 'info');
+          return;
+        }
+        const patientId = user.role === 'management'
+          ? getVal('modalBookPatientId')
+          : '';
+        if (user.role === 'management' && !patientId) {
+          this.showToast('Choose A Patient', 'Pick the patient this appointment belongs to.', 'error');
+          return;
+        }
+        const clinicianId = await this.store.clinicianIdForName(dentist);
+        const created = await this.runMutation(() => this.store.addAppointment({
+          service, dentist, clinicianId, date, notes, patientId
+        }));
+        if (!created) return;
+        this.closeModals();
+        this.showToast(user.role === 'management' ? 'Appointment Confirmed' : 'Reservation Requested',
+          user.role === 'management'
+            ? `"${service}" is confirmed and the patient has been notified.`
+            : `"${service}" has been queued. The concierge desk will confirm shortly.`, 'success');
+        this.showSection('appointments');
+        return;
+      }
+
+      if (!name || !date) {
+        this.showToast('Missing Details', 'Please complete the patient name and date.', 'error');
+        return;
+      }
+
+      this.store.addAppointment({
         patientName: name,
         patientEmail: contact.includes('@') ? contact : 'patient@maison.demo',
         patientPhone: !contact.includes('@') ? contact : '+1 (555) 234-8901',
@@ -1314,15 +1689,23 @@
     }
 
     /* ----------------------------------------------------
-       File Attachments & Chat Messaging (8 MB limit)
+       File Attachments & Chat Messaging
     ---------------------------------------------------- */
     handleFileSelect(event, workspaceKey) {
       const files = Array.from(event.target.files || []);
       if (files.length === 0) return;
 
-      const MAX_SIZE_BYTES = 8 * 1024 * 1024; // Strict 8 MB limit per file
+      // The attachments endpoint refuses anything larger; a bigger file would fail after upload.
+      const MAX_SIZE_BYTES = 3 * 1024 * 1024;
+      const MAX_PER_MESSAGE = 5;
+      const staged = this.stagedFiles[workspaceKey] || [];
 
       for (const file of files) {
+        if (staged.length >= MAX_PER_MESSAGE) {
+          this.showToast('Too Many Attachments', 'A message carries at most 5 files. Remove one before adding another.', 'error');
+          break;
+        }
+
         // 1. Enforce supported file format: Images (JPEG, PNG, WebP, GIF, SVG) and PDFs only
         const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(file.name);
         const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
@@ -1332,10 +1715,10 @@
           continue;
         }
 
-        // 2. Enforce 8 MB per-file limit
+        // 2. Enforce the per-file limit
         if (file.size > MAX_SIZE_BYTES) {
           const mbSize = (file.size / (1024 * 1024)).toFixed(1);
-          this.showToast('File Too Large', `"${file.name}" exceeds the 8 MB limit (${mbSize} MB). Please choose a file under 8 MB.`, 'error');
+          this.showToast('File Too Large', `"${file.name}" exceeds the 3 MB limit (${mbSize} MB). Please choose a smaller file.`, 'error');
           continue;
         }
 
@@ -1500,25 +1883,32 @@
     }
 
     markActiveThreadAsRead(workspaceKey) {
-      let threadId;
+      const threads = this.store.data.chatThreads || [];
       let role = 'patient';
-      if (workspaceKey === 'patient') {
-        threadId = this.activePatientThreadId || 'thread-olivia';
-        role = 'patient';
-      } else if (workspaceKey === 'doctor') {
-        threadId = this.activeDoctorThreadId || 'thread-olivia';
+      let threadId = this.activePatientThreadId;
+      if (workspaceKey === 'doctor') {
         role = 'doctor';
-      } else {
-        threadId = this.activeMgmtThreadId || 'thread-olivia';
+        threadId = this.activeDoctorThreadId;
+      } else if (workspaceKey === 'mgmt' || workspaceKey === 'management') {
         role = 'management';
+        threadId = this.activeMgmtThreadId;
+      }
+      if (!threadId) threadId = threads.length ? threads[0].id : null;
+      if (!threadId) {
+        this.showToast('No conversation open', 'Select a patient conversation first.', 'info');
+        return;
       }
 
-      this.store.markThreadRead(threadId, role);
-      this.renderAll();
-      this.showToast('Consultation Marked Read', 'All messages marked as read.', 'success');
+      Promise.resolve(this.store.markThreadRead(threadId, role))
+        .then(() => {
+          this.renderAll();
+          this.showToast('Consultation Marked Read', 'All messages marked as read.', 'success');
+        })
+        .catch(error => this.handleApiError(error));
     }
 
     setChatDirection(workspaceKey, direction) {
+      if (this.store.live) return;
       if (!this.chatDirections) this.chatDirections = {};
       this.chatDirections[workspaceKey] = direction;
 
@@ -1573,7 +1963,7 @@
       this.renderIcons();
     }
 
-    sendMessage(workspaceKey) {
+    async sendMessage(workspaceKey) {
       let inputEl, threadId;
       let msgType = 'standard';
       let instructionBadge = null;
@@ -1593,7 +1983,9 @@
       }
 
       const text = inputEl ? inputEl.value.trim() : '';
-      const stagedList = this.stagedFiles[workspaceKey] || [];
+      // The attachments endpoint stores the bytes it is given and sniffs the file signature, so the
+      // demo sample pills — which have no File behind them — can only travel in demo mode.
+      const stagedList = (this.stagedFiles[workspaceKey] || []).filter(item => !this.store.live || item.file);
 
       const activeThread = (this.store.data.chatThreads || []).find(t => t.id === threadId);
       if (!activeThread) {
@@ -1605,6 +1997,20 @@
       if (!text && stagedList.length === 0) {
         this.showToast('Empty Message', 'Please enter a message or attach a file before sending.', 'info');
         if (inputEl) inputEl.focus();
+        return;
+      }
+
+      if (this.store.live) {
+        const senderName = this.store.data.currentUser.name;
+        const preview = text.substring(0, 45) || `${stagedList.length} file(s)`;
+        const sent = await this.runMutation(async () => {
+          const result = await this.store.addMessage(threadId, { text, type: msgType, attachments: stagedList });
+          if (inputEl) inputEl.value = '';
+          this.stagedFiles[workspaceKey] = [];
+          this.renderStagedFiles(workspaceKey);
+          return result;
+        }, ['Message Sent', `${senderName}: ${preview}`, 'success']);
+        if (sent) this.scrollChatToBottom(workspaceKey);
         return;
       }
 
@@ -1680,14 +2086,10 @@
 
       const toastLabel = (direction === 'outgoing') ? 'Outgoing Message Sent' : 'Incoming Message Received';
       this.showToast(toastLabel, `Synchronized live (${senderName}): ${text.substring(0, 45) || (attachments.length + ' file(s)')}`, 'info');
-
-      // Check auto-reply: if outgoing message was sent, automatically generate an incoming care team reply
-      if (direction === 'outgoing' && this.autoReplyEnabled) {
-        this.triggerAutoCareReply(workspaceKey, threadId, text);
-      }
     }
 
     simulateIncomingCareReply(workspaceKey) {
+      if (this.store.live) return;
       let threadId, messagesAreaEl;
       let senderRole, senderName, replyText;
 
@@ -1772,52 +2174,6 @@
       }
     }
 
-    triggerAutoCareReply(workspaceKey, threadId, originalText) {
-      if (workspaceKey !== 'patient') return;
-
-      setTimeout(() => {
-        let replyText = 'Thank you for your message, Olivia. Your clinical notes are reviewed and synchronized with your aesthetic treatment roadmap.';
-        const lower = (originalText || '').toLowerCase();
-
-        if (lower.includes('?') || lower.includes('can') || lower.includes('could') || lower.includes('how')) {
-          replyText = 'Delighted to assist! Yes, we have factored that into your custom ceramic shading protocol. Feel free to bring any additional reference notes to our session.';
-        } else if (lower.includes('pain') || lower.includes('hurt') || lower.includes('sensitive') || lower.includes('rinse')) {
-          replyText = 'Understood, Olivia. Please continue with the soothing gentle rinse twice daily. If sensitivity persists, our concierge can prioritize an interim evaluation with Dr. Vance.';
-        } else if (lower.includes('time') || lower.includes('date') || lower.includes('appointment') || lower.includes('valet')) {
-          replyText = 'Our concierge desk has noted this for your upcoming visit at Suite IV. Complimentary valet parking and suite preparation are confirmed.';
-        }
-
-        const messagesAreaEl = document.getElementById('patientChatMessagesArea');
-        if (messagesAreaEl) {
-          const typingEl = document.createElement('div');
-          typingEl.className = 'typing-indicator-wrapper';
-          typingEl.id = 'patientAutoTypingIndicator';
-          typingEl.innerHTML = `
-            <div class="typing-dots"><span></span><span></span><span></span></div>
-            <span class="typing-label">Dr. Alistair Vance is replying...</span>
-          `;
-          messagesAreaEl.appendChild(typingEl);
-          this.scrollChatToBottom('patient');
-
-          setTimeout(() => {
-            const ind = document.getElementById('patientAutoTypingIndicator');
-            if (ind) ind.remove();
-
-            this.store.addMessage(threadId, {
-              text: replyText,
-              senderRole: 'doctor',
-              senderName: 'Dr. Alistair Vance, DDS',
-              type: 'standard'
-            });
-
-            this.renderAll();
-            this.scrollChatToBottom('patient');
-            this.showToast('New Incoming Message', `Dr. Alistair Vance: "${replyText.substring(0, 45)}..."`, 'info');
-          }, 900);
-        }
-      }, 1100);
-    }
-
     /* ----------------------------------------------------
        LightBox Preview for Attachments
     ---------------------------------------------------- */
@@ -1899,7 +2255,21 @@
       });
     }
 
-    handleReviewSubmit(event) {
+    /* Reviews are only accepted against one of the signed-in patient's completed visits,
+     * so the picker is rebuilt from the appointment rows the session can already see. */
+    syncReviewVisitOptions() {
+      const select = document.getElementById('reviewAppointmentId');
+      const hint = document.getElementById('reviewVisitHint');
+      if (!select) return;
+
+      const completed = (this.store.data.appointments || []).filter(a => a.status === 'completed');
+      select.innerHTML = '<option value="">Choose one of your completed visits…</option>' + completed
+        .map(a => `<option value="${this.escapeHtml(a.id)}">${this.escapeHtml(a.service)} — ${new Date(a.date).toLocaleDateString()}</option>`)
+        .join('');
+      if (hint) hint.style.display = completed.length ? 'none' : 'block';
+    }
+
+    async handleReviewSubmit(event) {
       event.preventDefault();
       const getVal = (id) => {
         const el = document.getElementById(id);
@@ -1917,6 +2287,25 @@
         return;
       }
 
+      const headlineEl = document.getElementById('reviewHeadline');
+      const contentEl = document.getElementById('reviewContent');
+
+      if (this.store.live) {
+        const appointmentId = getVal('reviewAppointmentId');
+        if (!appointmentId) {
+          this.showToast('Choose The Visit', 'Select the completed appointment this review describes.', 'error');
+          return;
+        }
+        const published = await this.runMutation(() => this.store.addReview({
+          appointmentId, rating, title, content
+        }), ['Review Published', 'Thank you. Your review is now visible across the clinic workspaces.', 'success']);
+        if (!published) return;
+        if (headlineEl) headlineEl.value = '';
+        if (contentEl) contentEl.value = '';
+        this.syncReviewVisitOptions();
+        return;
+      }
+
       this.store.addReview({
         author: author,
         rating: rating,
@@ -1925,9 +2314,7 @@
         content: content
       });
 
-      const headlineEl = document.getElementById('reviewHeadline');
       if (headlineEl) headlineEl.value = '';
-      const contentEl = document.getElementById('reviewContent');
       if (contentEl) contentEl.value = '';
 
       this.showToast('Review Published', 'Thank you. Your review is now visible across patient, doctor, and management workspaces.', 'success');
@@ -1938,8 +2325,11 @@
        Authentication & Demo Switcher
     ---------------------------------------------------- */
     openLoginModal() {
+      this.renderAuthChrome();
       const modal = document.getElementById('loginModal');
       if (modal) modal.classList.add('active');
+      const email = document.getElementById('loginEmail');
+      if (email && this.store.live && !this.store.data.currentUser) email.focus();
     }
 
     closeModals() {
@@ -1953,19 +2343,24 @@
       const createBtn = document.getElementById('tabCreateAccountBtn');
       const signInForm = document.getElementById('signInForm');
       const createForm = document.getElementById('createAccountForm');
+      const signIn = tabKey === 'signin';
 
-      if (tabKey === 'signin') {
-        signInBtn.classList.add('active');
-        createBtn.classList.remove('active');
-        signInForm.style.display = 'block';
-        createForm.style.display = 'none';
-      } else {
-        createBtn.classList.add('active');
-        signInBtn.classList.remove('active');
-        signInForm.style.display = 'none';
-        createForm.style.display = 'block';
-        this.updateCreateAccountView();
-      }
+      if (signInBtn) signInBtn.classList.toggle('active', signIn);
+      if (createBtn) createBtn.classList.toggle('active', !signIn);
+      if (signInForm) signInForm.style.display = signIn ? 'flex' : 'none';
+      if (createForm) createForm.style.display = signIn ? 'none' : 'flex';
+      this.clearAuthError();
+    }
+
+    showAuthError(message) {
+      const el = document.getElementById('authError');
+      if (!el) return;
+      el.textContent = message;
+      el.style.display = message ? 'block' : 'none';
+    }
+
+    clearAuthError() {
+      this.showAuthError('');
     }
 
     setLoginRole(roleKey) {
@@ -1980,75 +2375,112 @@
 
       if (this.loginModalRole === 'patient') {
         if (patientFields) patientFields.style.display = 'block';
-        if (staffNotice) staffNotice.style.display = 'none';
+        if (staffNotice) staffNotice.hidden = true;
       } else {
         if (patientFields) patientFields.style.display = 'none';
-        if (staffNotice) staffNotice.style.display = 'block';
+        if (staffNotice) staffNotice.hidden = false;
       }
     }
 
-    fillDemoCredentials(roleKey) {
+    useDemoCredentials() {
       const emailInput = document.getElementById('loginEmail');
       const passInput = document.getElementById('loginPassword');
-
-      if (roleKey === 'patient') {
-        if (emailInput) emailInput.value = 'olivia@maison.demo';
-        if (passInput) passInput.value = 'Smile2026';
-      } else if (roleKey === 'doctor') {
-        if (emailInput) emailInput.value = 'doctor@maison.demo';
-        if (passInput) passInput.value = 'Care2026';
-      } else if (roleKey === 'management') {
-        if (emailInput) emailInput.value = 'admin@maison.demo';
-        if (passInput) passInput.value = 'Maison2026';
-      }
+      if (emailInput) emailInput.value = 'olivia@maison.demo';
+      if (passInput) passInput.value = 'ClinicDemo2026!';
+      this.showAuthError('');
     }
 
-    handleSignInSubmit(event) {
+    async handleSignInSubmit(event) {
       event.preventDefault();
-      this.selectRole(this.loginModalRole);
-      this.closeModals();
-      this.showToast('Authentication Successful', `Welcome to the ${this.loginModalRole.toUpperCase()} workspace.`, 'success');
-    }
+      this.clearAuthError();
 
-    handleCreateAccountSubmit(event) {
-      event.preventDefault();
-      if (this.loginModalRole !== 'patient') {
-        this.showToast('Administrative Provisioning', 'Clinician and management credentials are created exclusively by Clinic Administration.', 'info');
+      if (!this.store.api) {
+        this.selectRole(this.loginModalRole);
+        this.closeModals();
         return;
       }
 
-      const nameEl = document.getElementById('signupName');
-      const emailEl = document.getElementById('signupEmail');
-      const name = nameEl ? nameEl.value : '';
-      const email = emailEl ? emailEl.value : '';
+      const email = (document.getElementById('loginEmail') || {}).value || '';
+      const password = (document.getElementById('loginPassword') || {}).value || '';
+      const button = event.target.querySelector('button[type="submit"]');
+      if (button) button.disabled = true;
+      try {
+        await this.store.signIn(email.trim(), password);
+        this.closeModals();
+        this.enterWorkspace(this.store.data.currentUser);
+      } catch (error) {
+        // The session cookie is already issued at this point, so a failed first read
+        // must still land the member in their workspace rather than bounce them out.
+        if (this.store.data.currentUser) {
+          this.closeModals();
+          this.enterWorkspace(this.store.data.currentUser);
+          this.showToast('Signed in, data incomplete', error.message, 'error');
+        } else {
+          this.showAuthError(error.message || 'Sign in failed.');
+        }
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
 
-      if (!name || !email) {
-        this.showToast('Incomplete Account Details', 'Please enter your full name and email address.', 'error');
+    async handleCreateAccountSubmit(event) {
+      event.preventDefault();
+      this.clearAuthError();
+
+      const name = (document.getElementById('signupName') || {}).value || '';
+      const email = (document.getElementById('signupEmail') || {}).value || '';
+      const phone = (document.getElementById('signupPhone') || {}).value || '';
+      const password = (document.getElementById('signupPassword') || {}).value || '';
+
+      if (!name.trim() || !email.trim()) {
+        this.showAuthError('Enter your full name and email address.');
         return;
       }
 
-      // Update patient profile
-      this.store.data.currentUser = {
-        id: 'user-patient-custom',
-        role: 'patient',
-        name: name,
-        email: email,
-        phone: '+1 (555) 789-9921',
-        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
-        title: 'Registered Patient',
-        memberSince: 'Today',
-        smileScore: 92
-      };
-      this.store.saveState();
+      if (!this.store.api) {
+        // Offline preview: the profile is local only, so say so instead of pretending an account exists.
+        this.store.data.currentUser = Object.assign({}, this.store.data.currentUser, {
+          name: name.trim(),
+          email: email.trim(),
+          title: 'Registered Patient'
+        });
+        this.store.saveState();
+        this.selectRole('patient');
+        this.closeModals();
+        this.showToast('Preview account updated', 'Start the clinic service to create a real account.', 'info');
+        return;
+      }
 
-      this.selectRole('patient');
+      try {
+        await this.store.signUp({ name: name.trim(), email: email.trim(), phone: phone.trim(), password });
+        this.closeModals();
+        this.enterWorkspace(this.store.data.currentUser);
+      } catch (error) {
+        if (this.store.data.currentUser) {
+          this.closeModals();
+          this.enterWorkspace(this.store.data.currentUser);
+          this.showToast('Account created, data incomplete', error.message, 'error');
+        } else {
+          this.showAuthError(error.message || 'Could not create the account.');
+        }
+      }
+    }
+
+    async handleSignOut() {
+      try {
+        await this.store.signOut();
+      } catch (error) {
+        this.showToast('Sign out failed', error.message, 'error');
+        return;
+      }
       this.closeModals();
-      this.showToast('Account Created', `Welcome to Maison Dental, ${name}.`, 'success');
+      this.enterSignedOut();
+      this.showToast('Signed out', 'Your clinic data is no longer cached on this device.', 'info');
     }
 
     handleForgotPassword(event) {
       event.preventDefault();
-      this.showToast('Demo Password Assistance', 'Demo credentials: Patient (Smile2026), Doctor (Care2026), Management (Maison2026).', 'info');
+      this.showAuthError('Password resets are handled by the clinic front desk. Ask them to set a temporary password for you.');
     }
 
     /* ----------------------------------------------------
@@ -2116,13 +2548,14 @@
       this.showToast('Porcelain Shade Selected', `Transmitted preference ${shadeCode} to Dr. Vance's atelier try-in tray.`, 'success');
     }
 
-    requestConciergeService(serviceName) {
-      this.showToast('Sanctuary Concierge Confirmed', `Your reservation for "${serviceName}" has been logged with Genevieve Laurent at the front desk.`, 'success');
-      this.store.addNotification({
-        title: 'Concierge Privilege Requested',
-        message: `Sanctuary service "${serviceName}" scheduled for your Studio Suite visit.`,
-        type: 'reminder'
-      });
+    async requestConciergeService(serviceName) {
+      const sent = await this.runMutation(() => this.store.requestConciergeService(serviceName));
+      if (!sent) return;
+      this.showToast('Sanctuary Concierge Notified',
+        this.store.live
+          ? `Your request for "${serviceName}" is now in your care conversation with the front desk.`
+          : `Your reservation for "${serviceName}" has been logged with Genevieve Laurent at the front desk.`,
+        'success');
       this.renderNotifications();
     }
 
