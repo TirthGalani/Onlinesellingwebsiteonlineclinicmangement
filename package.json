@@ -1,15 +1,22 @@
 {
   "name": "clinic-mangement-system",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Maison Dental clinic portal with authenticated patient, doctor and management workspaces.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "vercel dev",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/test-availability.mjs",
+    "db:migrate": "bash database/migrate.sh",
+    "backup": "bash database/backup.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
     "bcryptjs": "^3.0.3",

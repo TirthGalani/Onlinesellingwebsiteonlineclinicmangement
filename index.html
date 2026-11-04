@@ -1339,9 +1339,9 @@
   <!-- MODALS & OVERLAYS                          -->
   <!-- ========================================== -->
 
-  <!-- 1. Refined Login & Account Creation Modal -->
+  <!-- 1. Refined Workspace Profile Switcher Modal (No Auth Required) -->
   <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 480px;">
       <button class="modal-close-btn" onclick="window.maisonApp.closeModals()" aria-label="Close dialog">
         <i data-lucide="x" style="width: 18px; height: 18px;"></i>
       </button>
@@ -1352,112 +1352,54 @@
         </div>
         <div style="margin-bottom: 0.35rem;">
           <span class="luxury-crest-badge" style="background: rgba(194, 162, 115, 0.15); font-size: 0.68rem;">
-            <i data-lucide="shield-check" style="width: 11px; height: 11px;"></i> Interactive Prototype Mode
+            <i data-lucide="check-circle" style="width: 11px; height: 11px;"></i> Direct Workspace Access
           </span>
         </div>
-        <h3 id="loginModalTitle" style="font-size: 1.6rem;">Maison Dental Portal</h3>
-        <p style="font-size: 0.82rem; color: var(--color-ivory-muted);">Enter your credentials or test with one-click demo accounts</p>
+        <h3 id="loginModalTitle" style="font-size: 1.5rem;">Switch Workspace Profile</h3>
+        <p style="font-size: 0.82rem; color: var(--color-ivory-muted);">Select any role to instantly explore the clinic platform without login or password</p>
       </div>
 
-      <!-- Two Clearly Visible Tabs -->
-      <div class="modal-tabs">
-        <button class="modal-tab-btn active" id="tabSignInBtn" onclick="window.maisonApp.toggleAuthTab('signin')">Sign In</button>
-        <button class="modal-tab-btn" id="tabCreateAccountBtn" onclick="window.maisonApp.toggleAuthTab('create')">Create Account</button>
-      </div>
-
-      <!-- Role Selector -->
-      <div class="form-group">
-        <label class="form-label">Select Workspace Role</label>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;" id="loginRoleSelectorGroup">
-          <button type="button" class="action-toggle-btn active" data-role="patient" onclick="window.maisonApp.setLoginRole('patient')">
-            Patient
-          </button>
-          <button type="button" class="action-toggle-btn" data-role="doctor" onclick="window.maisonApp.setLoginRole('doctor')">
-            Doctor
-          </button>
-          <button type="button" class="action-toggle-btn" data-role="management" onclick="window.maisonApp.setLoginRole('management')">
-            Management
-          </button>
-        </div>
-      </div>
-
-      <!-- Sign In Form View -->
-      <form id="signInForm" onsubmit="window.maisonApp.handleSignInSubmit(event)">
-        <div class="form-group">
-          <label class="form-label" for="loginEmail">Email Address</label>
-          <input type="email" class="form-control" id="loginEmail" required value="olivia@maison.demo">
-        </div>
-
-        <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-            <label class="form-label" for="loginPassword" style="margin-bottom: 0;">Password</label>
-            <a href="#" style="font-size: 0.75rem; color: var(--color-gold-dark);" onclick="window.maisonApp.handleForgotPassword(event)">Forgot password?</a>
+      <!-- 1-Click Role Profiles List -->
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Patient Profile -->
+        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('patient'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Olivia Sterling" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.92rem; color: var(--color-forest-dark);">Olivia Sterling</div>
+              <div style="font-size: 0.76rem; color: var(--color-ivory-muted);">Patient Portal • Aesthetic & Restorative Care</div>
+            </div>
           </div>
-          <input type="password" class="form-control" id="loginPassword" required value="Smile2026">
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-          <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #5F6E64; cursor: pointer;">
-            <input type="checkbox" id="keepSignedIn" checked>
-            <span>Keep me signed in</span>
-          </label>
-        </div>
-
-        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
-          <span>Enter Workspace</span>
+          <span style="font-size: 0.75rem; font-weight: 600; color: var(--color-gold-dark); background: var(--color-gold-light); padding: 0.25rem 0.6rem; border-radius: 999px;">Switch &rarr;</span>
         </button>
-      </form>
 
-      <!-- Create Account Form View -->
-      <form id="createAccountForm" style="display: none;" onsubmit="window.maisonApp.handleCreateAccountSubmit(event)">
-        <div id="patientSignUpFields">
-          <div class="form-group">
-            <label class="form-label" for="signupName">Full Name</label>
-            <input type="text" class="form-control" id="signupName" placeholder="e.g. Clara Montgomery">
+        <!-- Doctor Profile -->
+        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('doctor'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=300&q=80" alt="Dr. Alistair Vance" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.92rem; color: var(--color-forest-dark);">Dr. Alistair Vance</div>
+              <div style="font-size: 0.76rem; color: var(--color-ivory-muted);">Doctor Workspace • Lead Prosthodontist</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="signupEmail">Email Address</label>
-            <input type="email" class="form-control" id="signupEmail" placeholder="clara@example.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="signupPassword">Create Password</label>
-            <input type="password" class="form-control" id="signupPassword" placeholder="••••••••">
-          </div>
-          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
-            <span>Create Patient Account</span>
-          </button>
-          <div style="font-size: 0.72rem; color: #738479; text-align: center; margin-top: 0.6rem;">
-            [Prototype Note: Account registration is simulated in local session storage for testing]
-          </div>
-        </div>
+          <span style="font-size: 0.75rem; font-weight: 600; color: var(--color-gold-dark); background: var(--color-gold-light); padding: 0.25rem 0.6rem; border-radius: 999px;">Switch &rarr;</span>
+        </button>
 
-        <!-- Doctor & Management Account Creation Notice -->
-        <div id="staffSignUpNotice" style="display: none; padding: 1.5rem; background: var(--color-gold-light); border: 1px solid var(--color-gold-border); border-radius: var(--radius-md); text-align: center;">
-          <i data-lucide="shield-alert" style="width: 32px; height: 32px; color: var(--color-gold-dark); margin-bottom: 0.5rem;"></i>
-          <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem;">Staff Access Restricted</h4>
-          <p style="font-size: 0.82rem; color: #6E5A3D; line-height: 1.5;">
-            Clinician and executive management accounts are created and authenticated exclusively by <strong>Clinic Administration</strong>. Please use demo credentials below or contact operations.
-          </p>
-        </div>
-      </form>
+        <!-- Management Profile -->
+        <button type="button" class="btn-profile-switch" onclick="window.maisonApp.selectRole('management'); window.maisonApp.closeModals();" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-sand-dark); background: #FFFFFF; cursor: pointer; text-align: left; transition: all 0.2s ease;">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80" alt="Genevieve Laurent" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.92rem; color: var(--color-forest-dark);">Genevieve Laurent</div>
+              <div style="font-size: 0.76rem; color: var(--color-ivory-muted);">Management Workspace • Clinical Operations Director</div>
+            </div>
+          </div>
+          <span style="font-size: 0.75rem; font-weight: 600; color: var(--color-gold-dark); background: var(--color-gold-light); padding: 0.25rem 0.6rem; border-radius: 999px;">Switch &rarr;</span>
+        </button>
+      </div>
 
-      <!-- Demo Credentials Auto-Fill Box -->
-      <div class="demo-credentials-box">
-        <h5>Demo Credentials (Click to Auto-fill)</h5>
-        <div class="demo-autofill-chips">
-          <button type="button" class="demo-chip-btn" onclick="window.maisonApp.fillDemoCredentials('patient')">
-            <span><strong>Patient:</strong> olivia@maison.demo</span>
-            <span style="font-family: monospace; color: var(--color-ivory-muted);">Smile2026</span>
-          </button>
-          <button type="button" class="demo-chip-btn" onclick="window.maisonApp.fillDemoCredentials('doctor')">
-            <span><strong>Doctor:</strong> doctor@maison.demo</span>
-            <span style="font-family: monospace; color: var(--color-ivory-muted);">Care2026</span>
-          </button>
-          <button type="button" class="demo-chip-btn" onclick="window.maisonApp.fillDemoCredentials('management')">
-            <span><strong>Management:</strong> admin@maison.demo</span>
-            <span style="font-family: monospace; color: var(--color-ivory-muted);">Maison2026</span>
-          </button>
-        </div>
+      <div style="margin-top: 1.25rem; text-align: center; font-size: 0.74rem; color: #738479; background: var(--color-ivory-soft); padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--color-sand-border);">
+        <i data-lucide="shield-check" style="width: 13px; height: 13px; vertical-align: middle; margin-right: 3px; color: var(--color-forest-dark);"></i> Instant workspace access &mdash; no login or password required.
       </div>
     </div>
   </div>

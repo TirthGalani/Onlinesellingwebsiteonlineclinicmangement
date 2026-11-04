@@ -1970,15 +1970,8 @@
 
     setLoginRole(roleKey) {
       this.loginModalRole = roleKey;
-      document.querySelectorAll('#loginRoleSelectorGroup .action-toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-role') === roleKey);
-      });
-
-      // Update create account view if on that tab
-      this.updateCreateAccountView();
-
-      // Auto populate the sign in form with demo credentials for ease of use
-      this.fillDemoCredentials(roleKey);
+      this.selectRole(roleKey);
+      this.closeModals();
     }
 
     updateCreateAccountView() {

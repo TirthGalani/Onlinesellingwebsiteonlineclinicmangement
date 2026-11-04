@@ -3,3 +3,13 @@ node_modules/
 .DS_Store
 Thumbs.db
 *.log
+
+
+backups/
+.env.local
+.env.*.local
+*.dump
+
+backend/.env
+backend/node_modules/
+.freebuff/

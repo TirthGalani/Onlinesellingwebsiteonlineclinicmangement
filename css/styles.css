@@ -3720,3 +3720,16 @@ input, textarea, select {
 }
 
 
+
+
+/* Direct Profile Switcher Styles */
+.btn-profile-switch {
+  transition: all 0.2s ease;
+}
+
+.btn-profile-switch:hover {
+  border-color: var(--color-gold) !important;
+  background: var(--color-gold-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(20, 40, 29, 0.06);
+}
