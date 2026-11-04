@@ -90,3 +90,4 @@ The frontend runs with zero setup or build steps. All three workspaces (**Patien
   - **Dr. Alistair Vance** — Doctor Workspace (Patient charts, clinical plans, prescription messaging)
   - **Genevieve Laurent** — Management Workspace (Operations overview, appointment scheduling, staff coordination)
 - **Shared Live State**: Tri-directional chat synchronizes across Patient, Doctor, and Management portals immediately in the browser session.
+

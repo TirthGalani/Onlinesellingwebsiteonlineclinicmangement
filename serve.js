@@ -1,10 +1,11 @@
 // Zero-dependency local web server for Maison Dental Clinic Management System
+// Serves the frontend/ directory at http://127.0.0.1:5500/
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 5500;
-const ROOT_DIR = __dirname;
+const ROOT_DIR = path.join(__dirname, 'frontend');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -53,7 +54,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`\n======================================================`);
-  console.log(`  Maison Dental Portal is running locally!`);
+  console.log(`  Maison Dental Portal (frontend/) is running!`);
   console.log(`  Access the portal at:`);
   console.log(`  👉 http://127.0.0.1:${PORT}/index.html`);
   console.log(`======================================================\n`);

@@ -1,0 +1,12 @@
+{
+  "name": "maison-dental-frontend",
+  "version": "1.0.0",
+  "description": "Maison Dental Portal - Aesthetic & Restorative Care",
+  "main": "serve.js",
+  "scripts": {
+    "start": "node serve.js",
+    "serve": "node serve.js"
+  },
+  "keywords": ["dental", "clinic", "portal", "frontend"],
+  "license": "ISC"
+}
