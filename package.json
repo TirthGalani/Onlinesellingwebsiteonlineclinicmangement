@@ -4,7 +4,9 @@
   "description": "Maison Dental clinic portal with authenticated patient, doctor and management workspaces.",
   "main": "index.js",
   "scripts": {
-    "start": "vercel dev",
+    "start": "node serve.js",
+    "serve": "node serve.js",
+    "serve:frontend": "node frontend/serve.js",
     "check": "node scripts/check.mjs",
     "test": "node scripts/test-availability.mjs",
     "db:migrate": "bash database/migrate.sh",
