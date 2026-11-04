@@ -1302,10 +1302,20 @@ input, textarea, select {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-ivory-warm);
 }
+
+/* The title takes the remaining line and wraps its own words; the action keeps its label on
+   one line and moves to the next row instead of being squeezed out of the card. */
+.card-header-flex > .card-title-group { min-width: 0; flex: 1 1 auto; }
+.card-header-flex > .btn-primary,
+.card-header-flex > .btn-secondary,
+.card-header-flex > .btn-gold,
+.card-header-flex > .status-badge { flex: 0 0 auto; white-space: nowrap; }
 
 .card-title-group h2, .card-title-group h3 {
   color: var(--color-forest-dark);
@@ -1331,6 +1341,7 @@ input, textarea, select {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .status-badge.status-confirmed {
@@ -1374,6 +1385,8 @@ input, textarea, select {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   padding: 1.15rem 1.25rem;
   background: var(--color-ivory-warm);
   border: 1px solid var(--color-ivory-border);
@@ -1393,6 +1406,8 @@ input, textarea, select {
   display: flex;
   align-items: center;
   gap: 1.1rem;
+  flex: 1 1 220px;
+  min-width: 0;
 }
 
 .appointment-date-box {
@@ -1578,6 +1593,12 @@ input, textarea, select {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* A pill is a single label; at narrow widths it must move to its own line, never break in half. */
+.card-title-group > div {
+  flex-wrap: wrap;
 }
 
 /* Porcelain Atelier & Shade Selector */
@@ -1930,14 +1951,26 @@ input, textarea, select {
   border-left: 3px solid var(--color-forest);
 }
 
-.management-appointment-row { display:flex; align-items:center; gap:0.75rem; }
-.management-appointment-row > .appointment-item { flex:1; min-width:0; }
-.appointment-cancel-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; flex:0 0 auto; padding:0.5rem 0.75rem; border:1px solid #FECACA; border-radius:var(--radius-full); color:#991B1B; background:#FFF7F7; font-size:0.75rem; font-weight:600; }
+.appointment-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.appointment-ref {
+  font-size: 0.7rem;
+  color: var(--color-ivory-muted);
+}
+
+.appointment-cancel-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.35rem; flex:0 0 auto; padding:0.5rem 0.75rem; border:1px solid #FECACA; border-radius:var(--radius-full); color:#991B1B; background:#FFF7F7; font-size:0.75rem; font-weight:600; white-space:nowrap; }
 .appointment-cancel-btn:hover { background:#FEE2E2; border-color:#FCA5A5; }
 
+/* Narrow screens: the status column reads as a footer strip under the visit details. */
 @media (max-width: 480px) {
-  .management-appointment-row { align-items:stretch; flex-direction:column; }
-  .appointment-cancel-btn { align-self:flex-end; }
+  .appointment-item { align-items: flex-start; }
+  .appointment-side { flex-direction: row; flex-wrap: wrap; align-items: center; }
 }
 
 .chat-main {
@@ -2200,6 +2233,7 @@ input, textarea, select {
   border: 1px solid var(--color-ivory-border);
   color: #5F6D63;
   background: var(--color-ivory-warm);
+  white-space: nowrap;
 }
 
 .action-toggle-btn.active {

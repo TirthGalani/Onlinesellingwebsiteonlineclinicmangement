@@ -785,7 +785,7 @@
       this.renderPatientReviews();
     }
 
-    renderAppointmentItemHtml(apt) {
+    renderAppointmentItemHtml(apt, actionsHtml = '') {
       const dateObj = new Date(apt.date);
       const monthStr = isNaN(dateObj) ? 'NOV' : dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
       const dayStr = isNaN(dateObj) ? '12' : dateObj.getDate();
@@ -813,9 +813,10 @@
               ${apt.notes ? `<div style="font-size: 0.78rem; color: #7A897E; margin-top: 0.35rem; font-style: italic;">“${this.escapeHtml(apt.notes)}”</div>` : ''}
             </div>
           </div>
-          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
+          <div class="appointment-side">
             <span class="status-badge ${statusBadgeClass}">${statusLabel}</span>
-            <span style="font-size: 0.7rem; color: var(--color-ivory-muted);">Ref: #${apt.id.slice(-6)}</span>
+            <span class="appointment-ref">Ref: #${apt.id.slice(-6)}</span>
+            ${actionsHtml}
           </div>
         </div>
       `;
@@ -1446,15 +1447,16 @@
       // Master Appointment Schedule List
       const masterListEl = document.getElementById('mgmtMasterAppointmentList');
       if (masterListEl) {
-        masterListEl.innerHTML = appointments.map(a => `
-          <div class="management-appointment-row">
-            ${this.renderAppointmentItemHtml(a)}
-            ${!['completed', 'cancelled'].includes(String(a.status).toLowerCase()) ? `
-              <button type="button" class="appointment-cancel-btn" onclick="window.maisonApp.cancelAppointment('${this.escapeHtml(a.id)}')" aria-label="Cancel appointment for ${this.escapeHtml(a.patientName)}">
-                <i data-lucide="calendar-x" style="width:14px;height:14px;"></i><span>Cancel</span>
-              </button>` : ''}
-          </div>
-        `).join('');
+        masterListEl.innerHTML = appointments.map(a => {
+          // The cancel control belongs inside the appointment card; as a sibling it escaped the
+          // box at narrow widths.
+          const actionsHtml = !['completed', 'cancelled'].includes(String(a.status).toLowerCase())
+            ? `<button type="button" class="appointment-cancel-btn" onclick="window.maisonApp.cancelAppointment('${this.escapeHtml(a.id)}')" aria-label="Cancel appointment for ${this.escapeHtml(a.patientName)}">
+                 <i data-lucide="calendar-x" style="width:14px;height:14px;"></i><span>Cancel</span>
+               </button>`
+            : '';
+          return this.renderAppointmentItemHtml(a, actionsHtml);
+        }).join('');
       }
 
       // Management Chat
