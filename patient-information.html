@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Information — First Visit, Payments &amp; Aftercare | Maison Dental</title>
+  <meta name="description" content="Prepare for your visit to Maison Dental: first-visit guide, insurance and payment options, pre- and post-treatment instructions, and answers to common questions.">
+  <meta property="og:title" content="Patient Information — Maison Dental">
+  <meta property="og:description" content="Everything you need to feel prepared before, during and after your visit.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/consultation-warm.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="patient-information.html" aria-current="page">Patient Info</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html" aria-current="page">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero page-hero--split">
+      <div class="site-container page-hero-inner">
+        <div class="reveal">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Patient Information</span>
+          </nav>
+          <span class="eyebrow">Before your visit</span>
+          <h1>Everything you need to feel <em>prepared.</em></h1>
+          <p>From your first appointment to aftercare at home, here is how we look after you — clearly, calmly and without surprises.</p>
+          <div class="page-hero-actions">
+            <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+            <a href="#faqs" class="btn btn--outline"><span>Read FAQs</span><i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="page-hero-media reveal" style="--delay: 100ms;">
+          <img src="assets/site/consultation-warm.jpg" alt="Dentist and patient talking during a relaxed consultation" width="1200" height="800" fetchpriority="high">
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3rem);">
+      <div class="site-container" data-tabs>
+        <div class="info-tabs" role="tablist" aria-label="Patient information sections">
+          <button type="button" class="info-tab is-active" id="tabFirstVisit" role="tab" aria-selected="true" aria-controls="first-visit" data-tab-target="first-visit">Your First Visit</button>
+          <button type="button" class="info-tab" id="tabPayment" role="tab" aria-selected="false" aria-controls="payment" data-tab-target="payment">Insurance &amp; Payment</button>
+          <button type="button" class="info-tab" id="tabInstructions" role="tab" aria-selected="false" aria-controls="instructions" data-tab-target="instructions">Before &amp; After Care</button>
+          <button type="button" class="info-tab" id="tabFaqs" role="tab" aria-selected="false" aria-controls="faqs" data-tab-target="faqs">FAQs</button>
+        </div>
+
+        <div class="info-panel is-active" id="first-visit" role="tabpanel" aria-labelledby="tabFirstVisit">
+          <div class="info-panel-grid">
+            <div>
+              <span class="eyebrow">First visit guide</span>
+              <h2>Arrive as you are. <em>We'll take it from here.</em></h2>
+              <p>A first appointment is a conversation as much as an examination. We will ask about your health, your concerns and what you would like to change. Then we examine gently, explain what we see and agree on the next step together.</p>
+              <ol class="step-list">
+                <li>
+                  <span class="step-num">1</span>
+                  <div><h3>Book your time</h3><p>Request an appointment online or call. Tell us if you feel nervous or need extra time.</p></div>
+                </li>
+                <li>
+                  <span class="step-num">2</span>
+                  <div><h3>Arrive 10 minutes early</h3><p>Complete your medical history and meet your clinician. Bring your ID and insurance card.</p></div>
+                </li>
+                <li>
+                  <span class="step-num">3</span>
+                  <div><h3>Consultation &amp; examination</h3><p>We listen, examine and may take digital scans or X-rays. Everything is explained as we go.</p></div>
+                </li>
+                <li>
+                  <span class="step-num">4</span>
+                  <div><h3>Your written plan</h3><p>You leave with clear options, expected times and fees. Nothing proceeds without your consent.</p></div>
+                </li>
+              </ol>
+            </div>
+
+            <div class="info-aside">
+              <h3>What to bring</h3>
+              <ul>
+                <li><i data-lucide="check"></i><span>Photo identification.</span></li>
+                <li><i data-lucide="check"></i><span>Your dental insurance card, if you have one.</span></li>
+                <li><i data-lucide="check"></i><span>A list of medications, supplements and allergies.</span></li>
+                <li><i data-lucide="check"></i><span>Any previous dental records or X-rays you can access.</span></li>
+                <li><i data-lucide="check"></i><span>Your questions — written down is fine.</span></li>
+              </ul>
+              <div style="margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--line); font-size:0.8rem; line-height:1.7;">
+                <strong style="display:block; color:var(--navy); margin-bottom:0.2rem;">Allow 45–60 minutes</strong>
+                New patient appointments include a full examination, so please leave a little extra time.
+              </div>
+              <div class="aside-actions" style="margin-top:1rem;">
+                <a href="appointment.html" class="btn btn--primary btn--sm"><span>Book Your First Visit</span><i data-lucide="arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel" id="payment" role="tabpanel" aria-labelledby="tabPayment" hidden>
+          <span class="eyebrow">Insurance &amp; payment</span>
+          <h2>Clear fees. <em>No surprises.</em></h2>
+          <p style="max-width:65ch;">We believe you should know the cost before treatment begins. After your examination you receive a written estimate, and we are happy to explain every item. We work with most major insurers and can help you understand your benefits before you commit.</p>
+
+          <div class="payment-grid">
+            <article class="payment-card">
+              <i data-lucide="shield-check"></i>
+              <h3>Dental insurance</h3>
+              <p>We work with most major providers. Bring your card and we will help verify benefits and submit claims where supported.</p>
+            </article>
+            <article class="payment-card">
+              <i data-lucide="credit-card"></i>
+              <h3>Flexible payment</h3>
+              <p>Card and bank payments are accepted. For larger plans, ask about staged payments or third-party financing, subject to approval.</p>
+            </article>
+            <article class="payment-card">
+              <i data-lucide="file-text"></i>
+              <h3>Written estimates</h3>
+              <p>Every recommended treatment comes with a written plan and fee estimate, so you can decide without pressure.</p>
+            </article>
+          </div>
+
+          <div class="info-panel-grid" style="margin-top:2rem;">
+            <div class="info-aside">
+              <h3>Good to know</h3>
+              <ul>
+                <li><i data-lucide="check"></i><span>Exact fees are confirmed after your examination and any required imaging.</span></li>
+                <li><i data-lucide="check"></i><span>Insurance cover varies by plan; we can help you interpret your benefits.</span></li>
+                <li><i data-lucide="check"></i><span>Payment plans and financing are subject to provider approval.</span></li>
+                <li><i data-lucide="check"></i><span>You will never be asked to commit to treatment on the day of your consultation.</span></li>
+              </ul>
+            </div>
+            <div>
+              <div class="smile-note" style="margin-bottom:1rem;">
+                <i data-lucide="info"></i>
+                <span>This page provides general guidance only. Your written estimate and the clinic's current fee schedule take precedence.</span>
+              </div>
+              <p style="font-size:0.88rem; line-height:1.8;">If you would like to discuss fees, insurance or a payment arrangement before booking, call our concierge team on <a href="tel:+12125550199" style="font-weight:700;color:var(--blue-deep);">+1 (212) 555-0199</a>. We would rather answer the question early than have you worry about it.</p>
+              <div class="aside-actions" style="margin-top:1rem; max-width:320px;">
+                <a href="contact.html" class="btn btn--outline btn--sm"><span>Ask About Fees</span><i data-lucide="arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-panel" id="instructions" role="tabpanel" aria-labelledby="tabInstructions" hidden>
+          <span class="eyebrow">Before &amp; after care</span>
+          <h2>General guidance for <em>a comfortable recovery.</em></h2>
+          <p style="max-width:65ch;">The instructions below are general. Your clinician may give you specific written advice for your treatment — always follow that first. If something feels wrong, call us rather than guessing.</p>
+
+          <h3 style="font-size:1.5rem; margin-top:2rem;">Before your appointment</h3>
+          <div class="instruction-grid">
+            <div class="instruction-card instruction-card--do">
+              <h3><i data-lucide="check"></i> Please do</h3>
+              <ul>
+                <li>Eat normally unless we have told you sedation or a general anaesthetic is planned.</li>
+                <li>Take your regular prescribed medications unless your clinician advises otherwise.</li>
+                <li>Tell us if you are pregnant, breastfeeding or have a new medical condition.</li>
+                <li>Arrive 10 minutes early, especially for a first visit.</li>
+                <li>Tell us if you feel anxious — we can adapt the appointment.</li>
+              </ul>
+            </div>
+            <div class="instruction-card instruction-card--dont">
+              <h3><i data-lucide="alert-circle"></i> Please avoid</h3>
+              <ul>
+                <li>Stopping prescribed medication without medical advice.</li>
+                <li>Smoking or alcohol before a surgical appointment.</li>
+                <li>Arriving without telling us about recent illness or fever.</li>
+                <li>Bringing children to an adult appointment unless arranged in advance.</li>
+                <li>Worrying alone — call us if you are unsure about anything.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 style="font-size:1.5rem; margin-top:2.2rem;">After treatment</h3>
+          <div class="instruction-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+            <article class="instruction-card">
+              <h3 style="font-size:1.15rem;"><i data-lucide="circle-dot"></i> After a filling</h3>
+              <ul>
+                <li>Wait until numbness has gone before eating, to avoid biting your cheek or tongue.</li>
+                <li>Mild sensitivity to hot or cold is common for a few days.</li>
+                <li>Avoid very hard foods on the treated tooth for 24 hours.</li>
+                <li>Call us if the bite feels high or the pain worsens.</li>
+              </ul>
+            </article>
+            <article class="instruction-card">
+              <h3 style="font-size:1.15rem;"><i data-lucide="circle-dot"></i> After an extraction</h3>
+              <ul>
+                <li>Bite gently on the gauze for 20–30 minutes as advised.</li>
+                <li>Do not rinse, spit or use a straw for 24 hours.</li>
+                <li>Use cold packs for swelling and take pain relief as directed.</li>
+                <li>Contact us if bleeding continues heavily or swelling increases.</li>
+              </ul>
+            </article>
+            <article class="instruction-card">
+              <h3 style="font-size:1.15rem;"><i data-lucide="circle-dot"></i> After whitening</h3>
+              <ul>
+                <li>Avoid tea, coffee, red wine and dark sauces for 48 hours.</li>
+                <li>Temporary sensitivity usually settles within a few days.</li>
+                <li>Use the desensitising product recommended by your clinician.</li>
+                <li>Wait at least 24 hours before using any other whitening product.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="smile-note" style="margin-top:1.4rem;">
+            <i data-lucide="phone-call"></i>
+            <span><strong>If you are worried after treatment, call us.</strong> For severe bleeding, facial swelling, difficulty breathing or swallowing, seek urgent medical care immediately.</span>
+          </div>
+        </div>
+
+        <div class="info-panel" id="faqs" role="tabpanel" aria-labelledby="tabFaqs" hidden>
+          <div class="section-head" style="margin-bottom:1.4rem;">
+            <span class="eyebrow">Common questions</span>
+            <h2>Answers, <em>without the jargon.</em></h2>
+            <p>If your question is not here, call or message us — we are happy to help before you book.</p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item is-open">
+              <button class="faq-question" type="button" aria-expanded="true">
+                <span>I feel very nervous about dental visits. Can you help?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>Yes. Tell us when you book so we can allow extra time and plan a gentler appointment. We explain each step, agree on a stop signal and never proceed without your consent. Please also mention any previous dental experiences that were difficult for you.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button" aria-expanded="false">
+                <span>When should my child first see a dentist?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>We recommend a first visit around the age of one, or when the first teeth appear. Early visits are short, friendly and mostly about prevention and helping your child feel comfortable with the clinic.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button" aria-expanded="false">
+                <span>Do you accept dental insurance?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>We work with most major insurers. Bring your policy details and we will help verify benefits and explain any estimated out-of-pocket cost before treatment. Cover varies by plan, so we always recommend checking directly with your insurer as well.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button" aria-expanded="false">
+                <span>How do I cancel or reschedule?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>Call or message us as soon as you know. We ask for at least 24 hours' notice where possible so the time can be offered to another patient. Any cancellation policy specific to your treatment will be explained in writing beforehand.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button" aria-expanded="false">
+                <span>What counts as a dental emergency?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>Severe or worsening pain, facial swelling, uncontrolled bleeding, a knocked-out or broken tooth, or trauma to the mouth should be treated urgently. Call us on +1 (212) 555-0199. If there is difficulty breathing or swallowing, seek emergency medical care immediately.</p></div></div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button" aria-expanded="false">
+                <span>Will whitening damage my enamel?</span>
+                <span class="faq-icon"><i data-lucide="plus"></i></span>
+              </button>
+              <div class="faq-answer"><div class="faq-answer-inner"><p>Professional whitening, carried out after an examination and with the right protocol, is considered safe for healthy teeth. Some temporary sensitivity is common. We assess your gums, enamel and restorations first and explain the realistic result before starting.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section site-section--mist">
+      <div class="site-container">
+        <div class="cta-band reveal">
+          <div class="cta-band-inner">
+            <div>
+              <span class="eyebrow eyebrow--light">We're here to help</span>
+              <h2>Still have a <em>question?</em></h2>
+              <p>Call, email or message the clinic. Our concierge team can help with appointments, fees, accessibility and anything else you need to feel comfortable.</p>
+            </div>
+            <div class="cta-band-actions">
+              <a href="contact.html" class="btn btn--white"><i data-lucide="message-circle"></i><span>Contact the Clinic</span></a>
+              <a href="appointment.html" class="btn btn--ghost-light"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

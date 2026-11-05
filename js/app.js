@@ -795,6 +795,12 @@
       // green for confirmed, amber for requested, blue for completed, teal for upcoming, purple for planned, and red for cancelled
       const statusBadgeClass = `status-${apt.status.toLowerCase()}`;
       const statusLabel = apt.status.charAt(0).toUpperCase() + apt.status.slice(1);
+      // Website bookings arrive without a portal account, so the source and the
+      // booking reference are shown on the card for clinic staff.
+      const sourceBadge = apt.source === 'website'
+        ? '<span class="status-badge status-website" style="background:#EAF2F8; color:#1B5F80; border:1px solid #BFE2F4;">Website</span>'
+        : '';
+      const referenceLabel = apt.reference ? `Ref: #${this.escapeHtml(apt.reference)}` : `Ref: #${String(apt.id).slice(-6)}`;
 
       return `
         <div class="appointment-item">
@@ -815,7 +821,8 @@
           </div>
           <div class="appointment-side">
             <span class="status-badge ${statusBadgeClass}">${statusLabel}</span>
-            <span class="appointment-ref">Ref: #${apt.id.slice(-6)}</span>
+            ${sourceBadge}
+            <span class="appointment-ref">${referenceLabel}</span>
             ${actionsHtml}
           </div>
         </div>
@@ -1459,6 +1466,9 @@
         }).join('');
       }
 
+      // Management Smile Case Library (website gallery with consent)
+      if (this.store.data.currentUser && this.store.data.currentUser.role === 'management') this.renderSmileCases();
+
       // Management Chat
       this.renderManagementChat();
 
@@ -1467,6 +1477,144 @@
       if (reviewsGrid) {
         reviewsGrid.innerHTML = this.store.data.reviews.map(r => this.renderReviewCardHtml(r)).join('');
       }
+    }
+
+    readImageAsDataUrl(input) {
+      const file = input && input.files && input.files[0];
+      if (!file) return Promise.resolve('');
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('The photograph could not be read.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    smileCaseFeedback(message, isError) {
+      const node = document.getElementById('smileCaseFeedback');
+      if (!node) return;
+      node.textContent = message || '';
+      node.style.color = isError ? '#B4544B' : 'var(--color-ivory-muted)';
+    }
+
+    async renderSmileCases() {
+      const listEl = document.getElementById('mgmtSmileCaseList');
+      if (!listEl) return;
+      if (!window.maisonApi) {
+        listEl.innerHTML = '<p style="font-size:0.78rem; color:var(--color-ivory-muted);">Connect the clinic database to manage website smile cases.</p>';
+        return;
+      }
+      try {
+        const cases = await window.maisonApi.smileCases();
+        if (!cases.length) {
+          listEl.innerHTML = '<p style="font-size:0.78rem; color:var(--color-ivory-muted);">No smile cases saved yet. Publish only with a signed consent form on file.</p>';
+          return;
+        }
+        listEl.innerHTML = cases.map(item => `
+          <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between; padding:0.85rem 1rem; border:1px solid var(--color-ivory-border); border-radius:14px;">
+            <div style="min-width:0;">
+              <div style="font-family:var(--font-serif); font-size:1.05rem;">${this.escapeHtml(item.title)}</div>
+              <div style="font-size:0.72rem; color:var(--color-ivory-muted);">
+                ${this.escapeHtml(item.treatment)} · consent ${item.consentConfirmedAt ? this.escapeHtml(String(item.consentConfirmedAt).slice(0, 10)) : 'not recorded'}
+                ${item.consentReference ? ` · ${this.escapeHtml(item.consentReference)}` : ''}
+                ${item.hasBefore && item.hasAfter ? ' · both photos on file' : ' · photos incomplete'}
+              </div>
+            </div>
+            <div style="display:flex; gap:0.4rem; flex-wrap:wrap; justify-content:flex-end;">
+              <button type="button" class="btn-secondary" onclick="window.maisonApp.toggleSmileCase('${this.escapeHtml(item.id)}', ${!item.published})">
+                <span>${item.published ? 'Unpublish' : 'Publish'}</span>
+              </button>
+              <button type="button" class="btn-secondary" onclick="window.maisonApp.withdrawSmileCaseConsent('${this.escapeHtml(item.id)}')" title="Patient withdrew consent">
+                <span>Withdraw consent</span>
+              </button>
+              <button type="button" class="appointment-cancel-btn" onclick="window.maisonApp.deleteSmileCase('${this.escapeHtml(item.id)}')">
+                <i data-lucide="trash-2" style="width:13px;height:13px;"></i><span>Delete</span>
+              </button>
+            </div>
+          </div>
+        `).join('');
+        if (window.lucide) window.lucide.createIcons();
+      } catch (error) {
+        const message = error && error.status === 403
+          ? 'Sign in with a management account to edit website smile cases.'
+          : (error && error.message) || 'Smile cases could not be loaded.';
+        listEl.innerHTML = `<p style="font-size:0.78rem; color:#B4544B;">${this.escapeHtml(message)}</p>`;
+      }
+    }
+
+    async handleSmileCaseSubmit(event) {
+      event.preventDefault();
+      if (!window.maisonApi) {
+        this.smileCaseFeedback('Connect the clinic database to save smile cases.', true);
+        return;
+      }
+      const value = id => {
+        const node = document.getElementById(id);
+        return node ? node.value.trim() : '';
+      };
+      const beforeInput = document.getElementById('smileCaseBefore');
+      const afterInput = document.getElementById('smileCaseAfter');
+      const publish = document.getElementById('smileCasePublish');
+
+      this.smileCaseFeedback('Uploading photographs…');
+      try {
+        const [beforeImage, afterImage] = await Promise.all([
+          this.readImageAsDataUrl(beforeInput),
+          this.readImageAsDataUrl(afterInput)
+        ]);
+        const payload = {
+          title: value('smileCaseTitle'),
+          treatment: value('smileCaseTreatment'),
+          summary: value('smileCaseSummary'),
+          consentName: value('smileCaseConsentName'),
+          consentReference: value('smileCaseConsentRef'),
+          consentConfirmedAt: value('smileCaseConsentDate'),
+          published: Boolean(publish && publish.checked),
+          beforeImage,
+          afterImage
+        };
+        await window.maisonApi.createSmileCase(payload);
+        this.smileCaseFeedback('Case saved. It appears on the website gallery when published.');
+        const form = document.getElementById('smileCaseForm');
+        if (form) form.reset();
+        await this.renderSmileCases();
+      } catch (error) {
+        this.smileCaseFeedback(error.message || 'The case could not be saved.', true);
+      }
+    }
+
+    async toggleSmileCase(id, published) {
+      if (!window.maisonApi) return;
+      try {
+        await window.maisonApi.updateSmileCase({ id, published });
+        this.smileCaseFeedback(published ? 'Case published to the website gallery.' : 'Case hidden from the website gallery.');
+      } catch (error) {
+        this.smileCaseFeedback(error.message || 'The case could not be updated.', true);
+      }
+      await this.renderSmileCases();
+    }
+
+    async withdrawSmileCaseConsent(id) {
+      if (!window.maisonApi) return;
+      try {
+        await window.maisonApi.updateSmileCase({ id, withdrawConsent: true });
+        this.smileCaseFeedback('Consent marked as withdrawn and the case is unpublished.');
+      } catch (error) {
+        this.smileCaseFeedback(error.message || 'Consent could not be withdrawn.', true);
+      }
+      await this.renderSmileCases();
+    }
+
+    async deleteSmileCase(id) {
+      if (!window.maisonApi) return;
+      if (!window.confirm('Delete this smile case and its photographs permanently?')) return;
+      try {
+        await window.maisonApi.deleteSmileCase(id);
+        this.smileCaseFeedback('Case deleted.');
+      } catch (error) {
+        this.smileCaseFeedback(error.message || 'The case could not be deleted.', true);
+      }
+      await this.renderSmileCases();
     }
 
     renderManagementChat() {

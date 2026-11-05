@@ -88,9 +88,10 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`\n======================================================`);
-  console.log(`  Maison Dental Portal + API is running!`);
-  console.log(`  Portal: http://127.0.0.1:${PORT}/index.html`);
-  console.log(`  Health: http://127.0.0.1:${PORT}/api/health`);
+  console.log(`  Maison Dental Website + Portal + API is running!`);
+  console.log(`  Website: http://127.0.0.1:${PORT}/index.html`);
+  console.log(`  Portal:  http://127.0.0.1:${PORT}/portal.html`);
+  console.log(`  Health:  http://127.0.0.1:${PORT}/api/health`);
   console.log(`  Storage: ${usingEmbeddedDatabase() ? 'embedded Postgres (backend/.pgdata)' : 'Neon (DATABASE_URL)'}`);
   console.log(`======================================================\n`);
 });

@@ -102,10 +102,12 @@
   function toAppointment(row) {
     return {
       id: row.id,
-      patientId: row.patient_id,
+      patientId: row.patient_id || '',
       patientName: row.patient_name,
       patientEmail: row.patient_email || '',
       patientPhone: row.patient_phone || '',
+      reference: row.reference || '',
+      source: row.source || 'portal',
       service: row.service,
       dentist: row.dentist,
       clinicianId: row.clinician_id || '',
@@ -439,6 +441,25 @@
     async auditLog(params) {
       const payload = await request(`/api/audit${query(params)}`);
       return payload.events || [];
+    },
+
+    /* Smile cases: consented before/after photography shown on the public gallery. */
+    async smileCases() {
+      const payload = await request('/api/cases');
+      return payload.cases || [];
+    },
+
+    async createSmileCase(input) {
+      const payload = await request('/api/cases', { method: 'POST', body: input });
+      return payload.case || null;
+    },
+
+    async updateSmileCase(input) {
+      return request('/api/cases', { method: 'PATCH', body: input });
+    },
+
+    async deleteSmileCase(id) {
+      return request(`/api/cases${query({ id })}`, { method: 'DELETE' });
     },
 
     async health() {

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book a Dental Appointment — Maison Dental</title>
+  <meta name="description" content="Request a dental appointment online, call the clinic or message us on WhatsApp. View clinic hours, emergency contacts and what to expect.">
+  <meta property="og:title" content="Book an Appointment — Maison Dental">
+  <meta property="og:description" content="Request your visit online. Gentle, modern dental care for the whole family.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/hero-consultation.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="patient-information.html">Patient Info</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm" aria-current="page"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html" aria-current="page">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="site-container page-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Appointment</span>
+        </nav>
+        <span class="eyebrow">Book your visit</span>
+        <h1>Let's find a time <em>that suits you.</em></h1>
+        <p>Request an appointment below and our concierge team will confirm the exact time with you. Prefer to speak to someone? Call us, or send a WhatsApp message — whichever feels easiest.</p>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3rem);">
+      <div class="site-container booking-layout">
+        <div class="booking-card reveal">
+          <span class="eyebrow">Appointment request</span>
+          <h2>Tell us what you need.</h2>
+          <p id="bookingIntro">Fields marked <span style="color: var(--blue);">*</span> are required. This form prepares a request; your appointment is confirmed once the clinic replies.</p>
+
+          <form class="booking-form" id="bookingForm" novalidate>
+            <div class="slot-honeypot" aria-hidden="true">
+              <label for="bookingCompanyWebsite">Company website</label>
+              <input type="text" id="bookingCompanyWebsite" name="companyWebsite" tabindex="-1" autocomplete="off">
+              <label for="bookingConfirmEmail">Confirm email</label>
+              <input type="text" id="bookingConfirmEmail" name="confirmEmail" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="bookingName">Full name <span class="req">*</span></label>
+                <input type="text" id="bookingName" name="fullName" autocomplete="name" placeholder="Your full name" required>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="bookingPhone">Phone number <span class="req">*</span></label>
+                <input type="tel" id="bookingPhone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+1 555 000 0000" required>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="bookingEmail">Email address</label>
+                <input type="email" id="bookingEmail" name="email" autocomplete="email" placeholder="you@example.com">
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="bookingPatientType">Are you a new patient?</label>
+                <select id="bookingPatientType" name="patientType" autocomplete="off">
+                  <option value="New patient">New patient</option>
+                  <option value="Existing patient">Existing patient</option>
+                </select>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field form-field--full">
+                <label for="bookingService">Service needed <span class="req">*</span></label>
+                <select id="bookingService" name="service" required>
+                  <option value="">Choose a service</option>
+                  <option value="New patient consultation">New patient consultation</option>
+                  <option value="General Dentistry">General Dentistry</option>
+                  <option value="Cosmetic Dentistry">Cosmetic Dentistry</option>
+                  <option value="Orthodontics">Orthodontics</option>
+                  <option value="Restorative Dentistry">Restorative Dentistry</option>
+                  <option value="Pediatric Dentistry">Pediatric Dentistry</option>
+                  <option value="Emergency appointment">Emergency appointment</option>
+                  <option value="Not sure — please advise">Not sure — please advise</option>
+                </select>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field form-field--full" id="slotField" hidden>
+                <span class="slot-heading">
+                  <label for="slotDays" id="slotDaysLabel">Choose a day <span class="req">*</span></label>
+                  <button type="button" class="slot-refresh" id="slotRefresh" hidden><i data-lucide="refresh-cw"></i><span>Refresh times</span></button>
+                </span>
+                <div class="slot-days" id="slotDays"></div>
+                <p class="slot-status" id="slotStatus" role="status" aria-live="polite">Checking open times…</p>
+                <div class="slot-times" id="slotTimes" role="group" aria-label="Available times"></div>
+                <div class="field-error" id="slotError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field" id="manualDateField">
+                <label for="bookingDate">Preferred date <span class="req">*</span></label>
+                <input type="date" id="bookingDate" name="preferredDate" required>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field" id="manualTimeField">
+                <label for="bookingTime">Preferred time <span class="req">*</span></label>
+                <select id="bookingTime" name="preferredTime" required>
+                  <option value="">Choose a time window</option>
+                  <option value="Morning (8:00 – 11:00)">Morning (8:00 – 11:00)</option>
+                  <option value="Midday (11:00 – 14:00)">Midday (11:00 – 14:00)</option>
+                  <option value="Afternoon (14:00 – 16:00)">Afternoon (14:00 – 16:00)</option>
+                  <option value="Late afternoon (16:00 – 18:00)">Late afternoon (16:00 – 18:00)</option>
+                  <option value="Saturday morning (9:00 – 12:00)">Saturday morning (9:00 – 12:00)</option>
+                  <option value="Flexible — please advise">Flexible — please advise</option>
+                </select>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field form-field--full">
+                <label for="bookingNotes">Anything we should know?</label>
+                <textarea id="bookingNotes" name="notes" placeholder="Symptoms, accessibility needs, dental anxiety, or anything that would make your visit easier." maxlength="1200"></textarea>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field form-field--full">
+                <label class="form-consent" for="bookingConsent">
+                  <input type="checkbox" id="bookingConsent" name="consent" required>
+                  <span>I agree to be contacted by phone, WhatsApp or email about this appointment request. <span class="req">*</span></span>
+                </label>
+                <div class="field-error" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn--primary" id="bookingSubmit"><i data-lucide="send"></i><span>Prepare My Request</span></button>
+            <p class="form-note" id="bookingFootnote">This form does not take payment and does not confirm the appointment. We will reply during clinic hours.</p>
+
+            <div class="form-success" id="bookingSuccess" role="status">
+              <strong id="bookingSuccessTitle">Request prepared — reference <span id="bookingReference">—</span></strong>
+              <p id="bookingSuccessBody">Send it to us on WhatsApp for the fastest response, sign in to the patient portal to book online, or call the clinic. Your appointment is confirmed only when we reply.</p>
+              <div class="success-actions">
+                <a class="btn btn--primary btn--sm" id="bookingWhatsApp" href="https://wa.me/12125550199" target="_blank" rel="noopener"><i data-lucide="message-circle"></i><span>Send on WhatsApp</span></a>
+                <button type="button" class="btn btn--outline btn--sm" id="bookingCalendar" hidden><i data-lucide="calendar-plus"></i><span>Add to Calendar</span></button>
+                <a class="btn btn--outline btn--sm" href="portal.html"><i data-lucide="log-in"></i><span>Sign in to Portal</span></a>
+                <a class="btn btn--outline btn--sm" href="tel:+12125550199"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <aside class="booking-aside reveal" style="--delay: 100ms;">
+          <div class="aside-card aside-card--tinted">
+            <span class="aside-icon"><i data-lucide="clock"></i></span>
+            <h3>Clinic hours</h3>
+            <ul class="hours-list">
+              <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+              <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+              <li><span>Sunday</span><span>Closed</span></li>
+              <li><span>Public holidays</span><span>By arrangement</span></li>
+            </ul>
+          </div>
+
+          <div class="aside-card">
+            <span class="aside-icon"><i data-lucide="message-circle"></i></span>
+            <h3>Prefer WhatsApp?</h3>
+            <p>Message our concierge team with the service you need and a preferred time. We reply during clinic hours.</p>
+            <div class="aside-actions">
+              <a href="https://wa.me/12125550199?text=Hello%20Maison%20Dental%2C%20I%20would%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener" class="btn btn--primary btn--sm"><i data-lucide="message-circle"></i><span>Chat on WhatsApp</span></a>
+              <a href="tel:+12125550199" class="btn btn--outline btn--sm"><i data-lucide="phone"></i><span>+1 (212) 555-0199</span></a>
+            </div>
+          </div>
+
+          <div class="aside-card aside-card--navy" id="emergency">
+            <span class="aside-icon"><i data-lucide="heart-pulse"></i></span>
+            <h3>Dental emergency</h3>
+            <p>For severe pain, facial swelling, uncontrolled bleeding or a knocked-out tooth, call us immediately. We reserve same-day slots for urgent care.</p>
+            <div class="aside-contact-line"><i data-lucide="phone-call"></i><a href="tel:+12125550199">+1 (212) 555-0199</a></div>
+            <div class="aside-actions">
+              <a href="tel:+12125550199" class="btn btn--white btn--sm"><i data-lucide="phone"></i><span>Call the Emergency Line</span></a>
+            </div>
+            <p style="font-size:0.72rem; margin-top:0.7rem; color:#9FB6C4;">If the situation is life-threatening, call your local emergency number immediately.</p>
+          </div>
+
+          <div class="aside-card">
+            <span class="aside-icon"><i data-lucide="shield-check"></i></span>
+            <h3>Insurance &amp; payment</h3>
+            <p>We work with most major insurers and offer transparent written estimates before treatment. See the patient information page for payment options.</p>
+            <div class="aside-actions">
+              <a href="patient-information.html#payment" class="btn btn--outline btn--sm"><span>Payment Options</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="site-container">
+        <div class="booking-steps">
+          <div class="booking-step reveal">
+            <span class="step-number">1</span>
+            <h3>Send your request</h3>
+            <p>Choose a service, date and time window. Add anything that would make your visit more comfortable.</p>
+          </div>
+          <div class="booking-step reveal" style="--delay: 80ms;">
+            <span class="step-number">2</span>
+            <h3>We confirm</h3>
+            <p>Our team checks availability and contacts you by phone or WhatsApp to confirm the exact appointment.</p>
+          </div>
+          <div class="booking-step reveal" style="--delay: 160ms;">
+            <span class="step-number">3</span>
+            <h3>You arrive</h3>
+            <p>Bring a photo ID and your insurance card. New patients should arrive 10 minutes early for paperwork.</p>
+          </div>
+        </div>
+
+        <div class="wa-note reveal" style="margin-top:1.5rem; justify-content:center; text-align:left;">
+          <i data-lucide="info"></i>
+          <span>Online requests are monitored during clinic hours. For urgent problems, always call rather than waiting for a form response.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

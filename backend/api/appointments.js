@@ -10,6 +10,16 @@ const {
   fetchAppointment
 } = require('./_lib/appointments');
 const { createNotification, IN_APP, EMAIL, SMS } = require('./_lib/notifications');
+const { sendEmail, sendSms } = require('./_lib/delivery');
+
+// Website bookings have no portal account, so status changes are delivered to the
+// contact details captured when the slot was booked.
+async function notifyWebsiteContact(appointment, title, body) {
+  const email = String(appointment.contact_email || appointment.patient_email || '');
+  const phone = String(appointment.contact_phone || appointment.patient_phone || '');
+  if (email) await sendEmail({ to: email, subject: `${title} — Maison Dental`, text: `${title}\n\n${body}` });
+  if (phone) await sendSms({ to: phone, body: `${title}: ${body}` });
+}
 
 function formatWhen(value) {
   return new Intl.DateTimeFormat('en-US', {
@@ -57,9 +67,10 @@ module.exports = async function handler(req, res) {
       const patientId = user.role === 'patient' ? null : text(req.query?.patientId, 100) || null;
       const doctorSurname = clinicianSurname(user.name);
 
-      const rows = await sql`SELECT a.*, u.email AS patient_email, u.phone AS patient_phone, c.name AS clinician_name
+      const rows = await sql`SELECT a.*, COALESCE(u.email, a.contact_email) AS patient_email,
+          COALESCE(u.phone, a.contact_phone) AS patient_phone, c.name AS clinician_name
         FROM appointments a
-        JOIN clinic_users u ON u.id = a.patient_id
+        LEFT JOIN clinic_users u ON u.id = a.patient_id
         LEFT JOIN clinic_users c ON c.id = a.clinician_id
         WHERE (${user.role} <> 'patient' OR a.patient_id = ${user.sub})
           AND (${user.role} <> 'doctor' OR a.clinician_id = ${user.sub} OR (a.clinician_id IS NULL AND lower(a.dentist) LIKE ${`%${doctorSurname}%`}))
@@ -198,15 +209,20 @@ module.exports = async function handler(req, res) {
         from: existing.appointment_at, to: newDate.toISOString(), clinicianId: clinician.id, status: nextStatus, reason: rescheduleReason
       });
       if (user.role !== 'patient') {
-        await createNotification(sql, {
-          userId: existing.patient_id,
-          title: 'Appointment rescheduled',
-          body: `${existing.service} is now scheduled for ${formatWhen(newDate)} with ${clinician.name}.`,
-          type: 'info',
-          link: '/',
-          channels: [IN_APP, EMAIL, SMS],
-          dedupeKey: `appointment-rescheduled:${id}:${newDate.toISOString()}`
-        });
+        const rescheduleBody = `${existing.service} is now scheduled for ${formatWhen(newDate)} with ${clinician.name}.`;
+        if (existing.patient_id) {
+          await createNotification(sql, {
+            userId: existing.patient_id,
+            title: 'Appointment rescheduled',
+            body: rescheduleBody,
+            type: 'info',
+            link: '/',
+            channels: [IN_APP, EMAIL, SMS],
+            dedupeKey: `appointment-rescheduled:${id}:${newDate.toISOString()}`
+          });
+        } else {
+          await notifyWebsiteContact(existing, 'Appointment rescheduled', rescheduleBody);
+        }
       }
       await notifyAppointmentStaff(
         sql,
@@ -246,15 +262,20 @@ module.exports = async function handler(req, res) {
     await audit(sql, user.sub, `appointment.${requestedStatus}`, 'appointment', id, { reason, previousStatus: existing.status });
 
     if (user.role !== 'patient') {
-      await createNotification(sql, {
-        userId: existing.patient_id,
-        title: `Appointment ${requestedStatus}`,
-        body: `${existing.service} on ${formatWhen(existing.appointment_at)} is now ${requestedStatus}.${reason ? ` Reason: ${reason}` : ''}`,
-        type: requestedStatus === 'confirmed' ? 'success' : 'info',
-        link: '/',
-        channels: [IN_APP, EMAIL, SMS],
-        dedupeKey: `appointment-status:${id}:${requestedStatus}`
-      });
+      const statusBody = `${existing.service} on ${formatWhen(existing.appointment_at)} is now ${requestedStatus}.${reason ? ` Reason: ${reason}` : ''}`;
+      if (existing.patient_id) {
+        await createNotification(sql, {
+          userId: existing.patient_id,
+          title: `Appointment ${requestedStatus}`,
+          body: statusBody,
+          type: requestedStatus === 'confirmed' ? 'success' : 'info',
+          link: '/',
+          channels: [IN_APP, EMAIL, SMS],
+          dedupeKey: `appointment-status:${id}:${requestedStatus}`
+        });
+      } else {
+        await notifyWebsiteContact(existing, `Appointment ${requestedStatus}`, statusBody);
+      }
     }
     await notifyAppointmentStaff(
       sql,

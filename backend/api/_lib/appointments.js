@@ -274,9 +274,10 @@ function canAccessAppointment(appointment, user) {
 }
 
 async function fetchAppointment(sql, id) {
-  const rows = await sql`SELECT a.*, u.email AS patient_email, u.phone AS patient_phone, c.name AS clinician_name
+  const rows = await sql`SELECT a.*, COALESCE(u.email, a.contact_email) AS patient_email,
+      COALESCE(u.phone, a.contact_phone) AS patient_phone, c.name AS clinician_name
     FROM appointments a
-    JOIN clinic_users u ON u.id = a.patient_id
+    LEFT JOIN clinic_users u ON u.id = a.patient_id
     LEFT JOIN clinic_users c ON c.id = a.clinician_id
     WHERE a.id = ${String(id)}
     LIMIT 1`;
@@ -285,13 +286,18 @@ async function fetchAppointment(sql, id) {
 
 module.exports = {
   clinicTimeZone,
+  DEFAULT_DAYS_AHEAD: MAX_DAYS_AHEAD,
   formatDateOnlyInZone,
   formatTimeInZone,
   weekdayForDateOnly,
+  addDays,
   zonedTimeToUtc,
   parseAppointmentDate,
   slotLabel,
   rulesFor,
+  ruleSlotStarts,
+  overlaps,
+  bookedIntervals,
   slotsForDate,
   availabilityForBooking,
   findConflict,

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Testimonials &amp; Reviews — Maison Dental</title>
+  <meta name="description" content="Read written patient reviews and watch video testimonials from the Maison Dental community. Every review is shared with consent.">
+  <meta property="og:title" content="Testimonials — Maison Dental">
+  <meta property="og:description" content="Warm words from the people who trust us with their smiles.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/consultation-warm.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="patient-information.html">Patient Info</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html" aria-current="page">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html" aria-current="page">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="site-container page-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Testimonials</span>
+        </nav>
+        <span class="eyebrow">In their words</span>
+        <h1>Warm words from <em>our community.</em></h1>
+        <p>Dental care is personal. These are the moments patients have chosen to share — the relief, the confidence and the small details that made a visit feel easier.</p>
+        <div class="page-hero-actions">
+          <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book a Visit</span></a>
+          <a href="contact.html" class="btn btn--outline"><span>Ask a Question</span><i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3rem);">
+      <div class="site-container">
+        <div class="rating-summary reveal" id="liveRating">
+          <div class="rating-big"><strong>4.9</strong><span>/ 5</span></div>
+          <div class="rating-summary-copy">
+            <span class="stars" aria-label="Rated 4.9 out of 5">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <p>Based on 380+ verified patient reviews across Google and our post-visit survey. Demo figures — replace with your clinic's real review summary.</p>
+          </div>
+        </div>
+
+        <div class="testimonial-grid" id="liveReviews">
+          <article class="quote-card reveal">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>I used to dread the dentist. Here, nobody rushed me. Dr Marsh explained every step before she started, and the whole visit felt quiet and calm.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">AR</span>
+              <div><strong>Amelia R.</strong><span>General dentistry · Patient since 2022</span></div>
+            </footer>
+          </article>
+
+          <article class="quote-card reveal" style="--delay: 80ms;">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>My whitening result is natural — not that artificial bright white. They were honest about what was realistic, which I appreciated more than a sales pitch.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">JT</span>
+              <div><strong>James T.</strong><span>Cosmetic whitening</span></div>
+            </footer>
+          </article>
+
+          <article class="quote-card reveal" style="--delay: 160ms;">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>Our daughter is eight and actually asks when she can go back. Dr Lindqvist turned the whole thing into a game. That alone is worth the visit.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">SM</span>
+              <div><strong>Sofia M.</strong><span>Paediatric dentistry · Family of four</span></div>
+            </footer>
+          </article>
+
+          <article class="quote-card reveal">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>The aligner plan was mapped out on a screen before I committed to anything. Six months later, my smile is exactly where they said it would be.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">NK</span>
+              <div><strong>Naomi K.</strong><span>Clear aligner therapy</span></div>
+            </footer>
+          </article>
+
+          <article class="quote-card reveal" style="--delay: 80ms;">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>I cracked a tooth on a Sunday and the emergency line answered in minutes. I was seen first thing Monday and the repair has been perfect since.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">DP</span>
+              <div><strong>Daniel P.</strong><span>Emergency restorative care</span></div>
+            </footer>
+          </article>
+
+          <article class="quote-card reveal" style="--delay: 160ms;">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <span class="stars" aria-label="5 out of 5 stars">
+              <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i>
+            </span>
+            <blockquote>Everything was explained clearly, including the cost, before anything began. No surprises at reception. I have already recommended the clinic to two friends.</blockquote>
+            <footer>
+              <span class="avatar-initials" aria-hidden="true">LC</span>
+              <div><strong>Lena C.</strong><span>Restorative dentistry</span></div>
+            </footer>
+          </article>
+        </div>
+
+        <p id="demoDisclaimer" style="margin-top:1.6rem; font-size:0.72rem; line-height:1.7; color:var(--muted); max-width:60ch;">
+          Reviews shown are illustrative demo content. Before publishing, replace them with verified reviews and keep written permission on file for every quote, name and photograph used.
+        </p>
+      </div>
+    </section>
+
+    <section class="site-section site-section--mist">
+      <div class="site-container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Video stories</span>
+          <h2>Patient stories, <em>in their own voice.</em></h2>
+          <p>A short film says what a paragraph cannot. Video testimonials are published only after the patient has reviewed and approved the final edit.</p>
+        </div>
+
+        <div class="video-grid">
+          <button type="button" class="video-card reveal" data-video-message="Amelia's video story is coming soon. It is awaiting final patient approval." aria-label="Play Amelia's video testimonial, coming soon">
+            <img src="assets/site/consultation-warm.jpg" alt="Patient smiling with her dentist after a consultation" loading="lazy" width="1200" height="800">
+            <span class="video-soon">Coming soon</span>
+            <span class="video-play"><span><i data-lucide="play"></i></span></span>
+            <span class="video-info"><strong>Amelia's story</strong><span>General dentistry</span></span>
+          </button>
+
+          <button type="button" class="video-card reveal" style="--delay: 80ms;" data-video-message="Naomi's aligner journey is coming soon. It is awaiting final patient approval." aria-label="Play Naomi's video testimonial, coming soon">
+            <img src="assets/site/hero-consultation.jpg" alt="Dentist talking a patient through a treatment plan" loading="lazy" width="1200" height="800">
+            <span class="video-soon">Coming soon</span>
+            <span class="video-play"><span><i data-lucide="play"></i></span></span>
+            <span class="video-info"><strong>Naomi's journey</strong><span>Clear aligners</span></span>
+          </button>
+
+          <button type="button" class="video-card reveal" style="--delay: 160ms;" data-video-message="The Martinez family story is coming soon. It is awaiting final patient approval." aria-label="Play the Martinez family video testimonial, coming soon">
+            <img src="assets/site/treatment-planning.jpg" alt="Dentist reviewing a scan with a patient" loading="lazy" width="1200" height="800">
+            <span class="video-soon">Coming soon</span>
+            <span class="video-play"><span><i data-lucide="play"></i></span></span>
+            <span class="video-info"><strong>The Martinez family</strong><span>Family care</span></span>
+          </button>
+        </div>
+
+        <div class="smile-note reveal" style="margin-top:1.6rem;">
+          <i data-lucide="shield-check"></i>
+          <span><strong>Consent first:</strong> video testimonials are shown only with the patient's written permission. Patients may withdraw consent at any time and the video will be removed from this page.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section">
+      <div class="site-container">
+        <div class="cta-band reveal">
+          <div class="cta-band-inner">
+            <div>
+              <span class="eyebrow eyebrow--light">Your turn</span>
+              <h2>Ready for a visit that <em>feels different?</em></h2>
+              <p>Tell us what you need and we will match you with the right clinician. Every first appointment includes time to talk before any treatment begins.</p>
+            </div>
+            <div class="cta-band-actions">
+              <a href="appointment.html" class="btn btn--white"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+              <a href="contact.html" class="btn btn--ghost-light"><i data-lucide="message-circle"></i><span>Contact the Clinic</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

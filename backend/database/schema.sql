@@ -50,10 +50,20 @@ ALTER TABLE appointments ADD COLUMN IF NOT EXISTS rescheduled_from timestamptz;
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS cancellation_reason text NOT NULL DEFAULT '';
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reminder_sent_at timestamptz;
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS created_by text REFERENCES clinic_users(id);
+-- Website bookings reserve a real slot before the patient has a portal account, so
+-- patient_id is optional and the contact details are stored on the row itself.
+ALTER TABLE appointments ALTER COLUMN patient_id DROP NOT NULL;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS reference text;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS source text NOT NULL DEFAULT 'portal' CHECK (source IN ('portal', 'website'));
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS contact_email text NOT NULL DEFAULT '';
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS contact_phone text NOT NULL DEFAULT '';
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS consent_accepted boolean NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS appointments_patient_date_idx ON appointments(patient_id, appointment_at);
 CREATE INDEX IF NOT EXISTS appointments_dentist_date_idx ON appointments(dentist, appointment_at);
 CREATE INDEX IF NOT EXISTS appointments_clinician_date_idx ON appointments(clinician_id, appointment_at);
+CREATE INDEX IF NOT EXISTS appointments_source_date_idx ON appointments(source, appointment_at);
 CREATE UNIQUE INDEX IF NOT EXISTS appointments_active_slot_unique ON appointments(dentist, appointment_at) WHERE status <> 'cancelled';
+CREATE UNIQUE INDEX IF NOT EXISTS appointments_reference_idx ON appointments(reference) WHERE reference IS NOT NULL;
 
 -- Weekly clinician availability. Times are clinic-local wall-clock times and are
 -- interpreted in CLINIC_TIMEZONE (default America/New_York) by the API.
@@ -132,6 +142,30 @@ CREATE TABLE IF NOT EXISTS patient_reviews (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS patient_reviews_visible_idx ON patient_reviews(visibility, created_at DESC);
+
+-- Before/after smile photography. A case may only be published while a written
+-- consent record is attached, and images are stored in Postgres so they inherit
+-- the same encryption and backup policy as chat attachments.
+CREATE TABLE IF NOT EXISTS smile_cases (
+  id text PRIMARY KEY,
+  title text NOT NULL,
+  treatment text NOT NULL,
+  summary text NOT NULL DEFAULT '',
+  clinician_id text REFERENCES clinic_users(id),
+  before_data bytea,
+  before_type text CHECK (before_type IN ('image/jpeg', 'image/png', 'image/webp')),
+  after_data bytea,
+  after_type text CHECK (after_type IN ('image/jpeg', 'image/png', 'image/webp')),
+  consent_name text NOT NULL DEFAULT '',
+  consent_reference text NOT NULL DEFAULT '',
+  consent_confirmed_at date,
+  published boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  CHECK (before_type IS NULL OR before_data IS NOT NULL),
+  CHECK (after_type IS NULL OR after_data IS NOT NULL)
+);
+CREATE INDEX IF NOT EXISTS smile_cases_published_idx ON smile_cases(published, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS user_notifications (
   id text PRIMARY KEY,

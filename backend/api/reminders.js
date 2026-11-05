@@ -2,6 +2,7 @@ const crypto = require('node:crypto');
 const { reply, method, database, requireUser, guardMutation, text, audit } = require('./_lib/http');
 const { clinicTimeZone, canAccessAppointment, fetchAppointment } = require('./_lib/appointments');
 const { createNotification, retryFailedDeliveries, IN_APP, EMAIL, SMS } = require('./_lib/notifications');
+const { sendEmail, sendSms } = require('./_lib/delivery');
 
 const MAX_PER_RUN = 40;
 
@@ -30,11 +31,32 @@ async function recordReminderRows(sql, appointmentId, kind, deliveries) {
 }
 
 async function sendAppointmentReminder(sql, appointment, kind) {
+  const body = `Reminder: ${appointment.service} with ${appointment.dentist} on ${formatWhen(appointment.appointment_at)}. Reply to the clinic if you need to reschedule.`;
+
+  // Website bookings have no portal account, so the reminder goes straight to the
+  // contact details captured at booking time and is logged on the appointment.
+  if (!appointment.patient_id) {
+    const deliveries = [];
+    const emailResult = await sendEmail({
+      to: appointment.contact_email || appointment.patient_email || '',
+      subject: 'Appointment reminder — Maison Dental',
+      text: `Hello ${appointment.patient_name},\n\n${body}\n\nReference: ${appointment.reference || ''}`
+    });
+    deliveries.push({ channel: EMAIL, ...emailResult });
+    const phone = appointment.contact_phone || appointment.patient_phone || '';
+    if (phone) {
+      const smsResult = await sendSms({ to: phone, body: `Appointment reminder: ${body}` });
+      deliveries.push({ channel: SMS, ...smsResult });
+    }
+    await recordReminderRows(sql, appointment.id, kind, deliveries);
+    return { notification: null, deliveries };
+  }
+
   const channels = [IN_APP, EMAIL, SMS];
   const result = await createNotification(sql, {
     userId: appointment.patient_id,
     title: 'Appointment reminder',
-    body: `Reminder: ${appointment.service} with ${appointment.dentist} on ${formatWhen(appointment.appointment_at)}. Reply to the clinic if you need to reschedule.`,
+    body,
     type: 'reminder',
     link: '/',
     channels,
@@ -60,8 +82,9 @@ module.exports = async function handler(req, res) {
   const sql = database();
   try {
     if (req.method === 'GET') {
-      const due = await sql`SELECT a.*, u.email AS patient_email, u.phone AS patient_phone
-        FROM appointments a JOIN clinic_users u ON u.id = a.patient_id
+      const due = await sql`SELECT a.*, COALESCE(u.email, a.contact_email) AS patient_email,
+          COALESCE(u.phone, a.contact_phone) AS patient_phone
+        FROM appointments a LEFT JOIN clinic_users u ON u.id = a.patient_id
         WHERE a.status IN ('requested', 'confirmed')
           AND a.appointment_at BETWEEN now() AND now() + interval '48 hours'
           AND a.reminder_sent_at IS NULL

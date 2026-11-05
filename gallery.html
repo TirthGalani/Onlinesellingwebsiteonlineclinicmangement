@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinic Gallery &amp; Smile Results — Maison Dental</title>
+  <meta name="description" content="Explore the Maison Dental clinic, technology and treatment spaces. Before/after smile photography is published only with written patient consent.">
+  <meta property="og:title" content="Gallery — Maison Dental">
+  <meta property="og:description" content="A look inside our calm clinic, our technology and our approach to smile results.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/clinic-interior-1.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="patient-information.html">Patient Info</a>
+        <a href="gallery.html" aria-current="page">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html" aria-current="page">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="site-container page-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Gallery</span>
+        </nav>
+        <span class="eyebrow">A look inside</span>
+        <h1>Calm spaces, <em>considered details.</em></h1>
+        <p>Explore our treatment rooms, technology and the little touches that make a visit feel less clinical. Smile result photography is published only with written patient consent.</p>
+        <div class="page-hero-actions">
+          <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book a Visit</span></a>
+          <a href="about.html" class="btn btn--outline"><span>Meet the Team</span><i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3rem);">
+      <div class="site-container">
+        <div class="gallery-filters" role="group" aria-label="Filter gallery">
+          <button type="button" class="gallery-filter is-active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="gallery-filter" data-filter="clinic" aria-pressed="false">Clinic Spaces</button>
+          <button type="button" class="gallery-filter" data-filter="technology" aria-pressed="false">Technology</button>
+          <button type="button" class="gallery-filter" data-filter="smile" aria-pressed="false">Smile &amp; Treatment</button>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+          <button type="button" class="gallery-item gallery-item--wide" data-category="clinic" data-title="The garden treatment suite" data-caption="Natural light, soft-blue upholstery and a calm, uncluttered space." aria-label="View the garden treatment suite">
+            <img src="assets/site/clinic-interior-1.jpg" data-full="assets/site/clinic-interior-1.jpg" alt="Open-plan dental suite with large windows and light-blue treatment chairs" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>The garden suite</strong><span>Clinic spaces</span></span>
+          </button>
+
+          <button type="button" class="gallery-item gallery-item--tall" data-category="clinic" data-title="A quiet treatment room" data-caption="Designed to reduce noise and make appointments feel unhurried." aria-label="View a quiet treatment room">
+            <img src="assets/site/clinic-interior-2.jpg" data-full="assets/site/clinic-interior-2.jpg" alt="Modern white and teal dental treatment room" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Quiet by design</strong><span>Clinic spaces</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="technology" data-title="Precision dental equipment" data-caption="Modern handpieces and delivery systems maintained to clinic standards." aria-label="View precision dental equipment">
+            <img src="assets/site/equipment-detail.jpg" data-full="assets/site/equipment-detail.jpg" alt="Close-up of modern dental equipment" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Precision equipment</strong><span>Technology</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="technology" data-title="Digital diagnostics" data-caption="3D imaging helps us plan accurately and explain clearly." aria-label="View digital diagnostics">
+            <img src="assets/site/technology-scan.jpg" data-full="assets/site/technology-scan.jpg" alt="Dentist reviewing a dental scan on a light box" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Digital diagnostics</strong><span>Technology</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="clinic smile" data-title="Consultation and planning" data-caption="A calm space to talk through goals, options and questions." aria-label="View the consultation space">
+            <img src="assets/site/treatment-planning.jpg" data-full="assets/site/treatment-planning.jpg" alt="Dentist explaining a scan to a seated patient" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Planning together</strong><span>Consultation</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="smile" data-title="Clear aligner therapy" data-caption="Discreet orthodontic treatment planned with digital scans." aria-label="View clear aligner therapy">
+            <img src="assets/site/orthodontics.jpg" data-full="assets/site/orthodontics.jpg" alt="Patient fitting a clear dental aligner" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Clear aligners</strong><span>Treatment</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="smile clinic" data-title="Comfort-first dentistry" data-caption="We adapt the pace of every appointment to the person in the chair." aria-label="View a comfort-first consultation">
+            <img src="assets/site/consultation-warm.jpg" data-full="assets/site/consultation-warm.jpg" alt="Dentist and patient smiling during a consultation" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Comfort first</strong><span>Patient care</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="technology" data-title="Sterilised instruments" data-caption="Instrument tracking and single-use barriers for every appointment." aria-label="View sterilised dental instruments">
+            <img src="assets/site/clinical-tools.jpg" data-full="assets/site/clinical-tools.jpg" alt="Dental instruments laid out on a sterile blue cloth" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Sterile &amp; ready</strong><span>Technology</span></span>
+          </button>
+
+          <button type="button" class="gallery-item" data-category="clinic" data-title="Focused, gentle care" data-caption="Modern equipment and a clinician's full attention." aria-label="View a treatment in progress">
+            <img src="assets/site/treatment-suite.jpg" data-full="assets/site/treatment-suite.jpg" alt="Dentist providing treatment under focused light" loading="lazy" width="1200" height="800">
+            <span class="gallery-caption"><strong>Focused care</strong><span>Clinic spaces</span></span>
+          </button>
+        </div>
+
+        <div style="text-align:center; margin-top:1.4rem; font-size:0.72rem; color:var(--muted);">
+          Select any image to view it larger. Use the arrow keys to move between images.
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section site-section--mist">
+      <div class="site-container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Smile results</span>
+          <h2>Real results, shared with <em>real consent.</em></h2>
+          <p>We do not publish identifiable patient photography without written permission. Consented before/after cases are shown privately during consultation, and this gallery will be updated as approvals are confirmed.</p>
+        </div>
+
+        <div class="smile-note reveal">
+          <i data-lucide="shield-check"></i>
+          <span id="consentPolicyText"><strong>Consent policy:</strong> before/after photographs are only used with the patient's informed written consent. Images are never edited to exaggerate a clinical result. The panels below are layout placeholders, not patient results.</span>
+        </div>
+
+        <div class="result-grid" id="liveCases">
+          <article class="result-card reveal">
+            <div class="result-pair">
+              <div class="result-pane">
+                <span class="result-label">Before</span>
+                <div class="result-placeholder"><i data-lucide="smile"></i><span>Consented before photo</span></div>
+              </div>
+              <div class="result-pane">
+                <span class="result-label">After</span>
+                <div class="result-placeholder"><i data-lucide="sparkles"></i><span>Consented after photo</span></div>
+              </div>
+            </div>
+            <div class="result-body">
+              <h3>Cosmetic smile refinement</h3>
+              <p>Representative layout for a composite bonding or veneer case. Replace with consented patient photography before publishing.</p>
+              <span class="result-tag">Consent required</span>
+            </div>
+          </article>
+
+          <article class="result-card reveal" style="--delay: 80ms;">
+            <div class="result-pair">
+              <div class="result-pane">
+                <span class="result-label">Before</span>
+                <div class="result-placeholder"><i data-lucide="scan-face"></i><span>Consented before photo</span></div>
+              </div>
+              <div class="result-pane">
+                <span class="result-label">After</span>
+                <div class="result-placeholder"><i data-lucide="smile"></i><span>Consented after photo</span></div>
+              </div>
+            </div>
+            <div class="result-body">
+              <h3>Clear aligner alignment</h3>
+              <p>Representative layout for an orthodontic case. Replace with consented patient photography before publishing.</p>
+              <span class="result-tag">Consent required</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta-band reveal" style="margin-top:2rem;">
+          <div class="cta-band-inner">
+            <div>
+              <span class="eyebrow eyebrow--light">See the clinic</span>
+              <h2>Visit us and <em>see for yourself.</em></h2>
+              <p>Photographs only go so far. Book a consultation to see the clinic, meet your clinician and discuss what is realistic for your smile.</p>
+            </div>
+            <div class="cta-band-actions">
+              <a href="appointment.html" class="btn btn--white"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+              <a href="contact.html" class="btn btn--ghost-light"><i data-lucide="map-pin"></i><span>Find the Clinic</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Gallery image viewer" aria-hidden="true">
+    <div class="lightbox-inner">
+      <div class="lightbox-frame">
+        <img id="lightboxImage" src="assets/site/clinic-interior-1.jpg" alt="">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close image viewer"><i data-lucide="x"></i></button>
+        <button type="button" class="lightbox-nav lightbox-nav--prev" id="lightboxPrev" aria-label="Previous image"><i data-lucide="chevron-left"></i></button>
+        <button type="button" class="lightbox-nav lightbox-nav--next" id="lightboxNext" aria-label="Next image"><i data-lucide="chevron-right"></i></button>
+      </div>
+      <div class="lightbox-caption">
+        <strong id="lightboxTitle">The garden suite</strong>
+        <span id="lightboxSubtitle">Clinic spaces</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

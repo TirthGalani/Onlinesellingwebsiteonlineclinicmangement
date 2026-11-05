@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dental Services — General, Cosmetic, Orthodontics &amp; More | Maison Dental</title>
+  <meta name="description" content="Explore general, cosmetic, orthodontic, restorative and pediatric dentistry at Maison Dental, with clear benefits and expected appointment times.">
+  <meta property="og:title" content="Dental Services — Maison Dental">
+  <meta property="og:description" content="Considered dentistry for every stage of life: general, cosmetic, orthodontics, restorative and pediatric care.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/treatment-planning.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html" aria-current="page">Services</a>
+        <a href="patient-information.html">Patient Info</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html" aria-current="page">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="site-container page-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Services</span>
+        </nav>
+        <span class="eyebrow">Our treatments</span>
+        <h1>Considered dentistry for <em>every stage of life.</em></h1>
+        <p>From routine prevention to complete smile restoration, every treatment is planned around your comfort, your goals and the long-term health of your teeth.</p>
+        <div class="anchor-nav" aria-label="Jump to a service">
+          <a href="#general">General</a>
+          <a href="#cosmetic">Cosmetic</a>
+          <a href="#orthodontics">Orthodontics</a>
+          <a href="#restorative">Restorative</a>
+          <a href="#pediatric">Pediatric</a>
+          <a href="#emergency">Emergency</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3.5rem);">
+      <div class="site-container">
+        <div class="section-head reveal">
+          <span class="eyebrow">What we offer</span>
+          <h2>Five pillars of <em>complete care.</em></h2>
+          <p>Each service below includes what is involved, the benefits you can expect and a typical appointment time. Your exact plan will always be confirmed after examination.</p>
+        </div>
+
+        <article class="service-detail" id="general">
+          <div class="service-detail-media reveal">
+            <div class="image-frame">
+              <img src="assets/site/clinic-interior-2.jpg" alt="Bright general dentistry treatment room" loading="lazy" width="1200" height="800">
+            </div>
+          </div>
+          <div class="service-detail-copy reveal" style="--delay: 80ms;">
+            <span class="eyebrow">01 · Preventive care</span>
+            <h2>General Dentistry</h2>
+            <p>Routine care is the foundation of a healthy smile. Our general appointments include a gentle examination, professional hygiene, oral cancer screening and clear advice on home care. If a filling is needed, we use tooth-coloured materials and preserve as much natural tooth as possible.</p>
+            <div class="service-facts">
+              <div class="service-fact"><i data-lucide="clock"></i><div><strong>Expected time</strong>30–60 minutes</div></div>
+              <div class="service-fact"><i data-lucide="calendar-check"></i><div><strong>Recall</strong>Every 6 months</div></div>
+            </div>
+            <ul class="benefit-list">
+              <li><i data-lucide="check"></i><span>Early detection of decay, gum disease and oral health changes.</span></li>
+              <li><i data-lucide="check"></i><span>Fresher breath and a smoother, cleaner smile.</span></li>
+              <li><i data-lucide="check"></i><span>Conservative, tooth-coloured fillings where treatment is needed.</span></li>
+            </ul>
+            <div class="service-detail-actions">
+              <a href="appointment.html?service=General%20Dentistry" class="btn btn--primary"><span>Book General Care</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="service-detail service-detail--reverse" id="cosmetic">
+          <div class="service-detail-media reveal">
+            <div class="image-frame">
+              <img src="assets/site/hero-consultation.jpg" alt="Dentist discussing cosmetic treatment options with a patient" loading="lazy" width="1200" height="800">
+            </div>
+          </div>
+          <div class="service-detail-copy reveal" style="--delay: 80ms;">
+            <span class="eyebrow">02 · Aesthetic dentistry</span>
+            <h2>Cosmetic Dentistry</h2>
+            <p>Professional whitening that brightens your smile safely and effectively, with a shade plan matched to your natural teeth. We also offer porcelain veneers, composite bonding and digital smile design for shape, proportion and subtle refinement — never an artificial look.</p>
+            <div class="service-facts">
+              <div class="service-fact"><i data-lucide="clock"></i><div><strong>Whitening</strong>60–90 minutes</div></div>
+              <div class="service-fact"><i data-lucide="calendar-check"></i><div><strong>Veneers</strong>2–3 visits</div></div>
+            </div>
+            <ul class="benefit-list">
+              <li><i data-lucide="check"></i><span>Natural-looking results with careful shade and shape matching.</span></li>
+              <li><i data-lucide="check"></i><span>Minimally invasive techniques that preserve healthy enamel.</span></li>
+              <li><i data-lucide="check"></i><span>Digital previews so you can see the plan before treatment begins.</span></li>
+            </ul>
+            <div class="service-detail-actions">
+              <a href="appointment.html?service=Cosmetic%20Dentistry" class="btn btn--primary"><span>Book a Smile Consultation</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="service-detail" id="orthodontics">
+          <div class="service-detail-media reveal">
+            <div class="image-frame">
+              <img src="assets/site/orthodontics.jpg" alt="Patient fitting a clear orthodontic aligner" loading="lazy" width="1200" height="800">
+            </div>
+          </div>
+          <div class="service-detail-copy reveal" style="--delay: 80ms;">
+            <span class="eyebrow">03 · Alignment</span>
+            <h2>Orthodontics</h2>
+            <p>Clear aligners and modern braces can improve crowding, spacing and bite function at almost any age. We begin with a digital assessment, explain the realistic movement plan and give you a clear timeline before you commit to treatment.</p>
+            <div class="service-facts">
+              <div class="service-fact"><i data-lucide="clock"></i><div><strong>Consultation</strong>30–45 minutes</div></div>
+              <div class="service-fact"><i data-lucide="calendar-check"></i><div><strong>Treatment</strong>6–24 months</div></div>
+            </div>
+            <ul class="benefit-list">
+              <li><i data-lucide="check"></i><span>Discreet clear aligner options for adults and older teens.</span></li>
+              <li><i data-lucide="check"></i><span>Digital planning and progress reviews at each stage.</span></li>
+              <li><i data-lucide="check"></i><span>Retainers and follow-up care to protect your result.</span></li>
+            </ul>
+            <div class="service-detail-actions">
+              <a href="appointment.html?service=Orthodontics" class="btn btn--primary"><span>Book an Orthodontic Assessment</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="service-detail service-detail--reverse" id="restorative">
+          <div class="service-detail-media reveal">
+            <div class="image-frame">
+              <img src="assets/site/technology-scan.jpg" alt="Dentist reviewing a detailed 3D dental scan" loading="lazy" width="1200" height="800">
+            </div>
+          </div>
+          <div class="service-detail-copy reveal" style="--delay: 80ms;">
+            <span class="eyebrow">04 · Rebuild &amp; restore</span>
+            <h2>Restorative Dentistry</h2>
+            <p>When a tooth is damaged or missing, our restorative care focuses on strength, function and a natural appearance. Options include crowns, bridges, implants and endodontic treatment, planned with digital imaging and explained step by step.</p>
+            <div class="service-facts">
+              <div class="service-fact"><i data-lucide="clock"></i><div><strong>Appointment</strong>60–120 minutes</div></div>
+              <div class="service-fact"><i data-lucide="calendar-check"></i><div><strong>Implant journey</strong>3–6 months</div></div>
+            </div>
+            <ul class="benefit-list">
+              <li><i data-lucide="check"></i><span>Restores comfortable chewing and protects weakened teeth.</span></li>
+              <li><i data-lucide="check"></i><span>Replaces missing teeth without compromising neighbouring teeth.</span></li>
+              <li><i data-lucide="check"></i><span>Natural-looking ceramics matched to your existing smile.</span></li>
+            </ul>
+            <div class="service-detail-actions">
+              <a href="appointment.html?service=Restorative%20Dentistry" class="btn btn--primary"><span>Book a Restorative Consultation</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="service-detail" id="pediatric">
+          <div class="service-detail-media reveal">
+            <div class="image-frame">
+              <img src="assets/site/consultation-warm.jpg" alt="Dentist smiling with a patient during a friendly appointment" loading="lazy" width="1200" height="800">
+            </div>
+          </div>
+          <div class="service-detail-copy reveal" style="--delay: 80ms;">
+            <span class="eyebrow">05 · Young smiles</span>
+            <h2>Pediatric Dentistry</h2>
+            <p>Children deserve a gentle introduction to dentistry. We use clear, age-appropriate explanations, a playful pace and preventive care such as sealants and fluoride. Parents leave with practical guidance, not judgement.</p>
+            <div class="service-facts">
+              <div class="service-fact"><i data-lucide="clock"></i><div><strong>Expected time</strong>30–45 minutes</div></div>
+              <div class="service-fact"><i data-lucide="calendar-check"></i><div><strong>First visit</strong>From age 1</div></div>
+            </div>
+            <ul class="benefit-list">
+              <li><i data-lucide="check"></i><span>A positive, confidence-building first experience.</span></li>
+              <li><i data-lucide="check"></i><span>Preventive sealants, fluoride and dietary guidance.</span></li>
+              <li><i data-lucide="check"></i><span>Early assessment of spacing, crowding and bite development.</span></li>
+            </ul>
+            <div class="service-detail-actions">
+              <a href="appointment.html?service=Pediatric%20Dentistry" class="btn btn--primary"><span>Book a Children's Visit</span><i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="site-section site-section--mist">
+      <div class="site-container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow eyebrow--center">How it works</span>
+          <h2>Simple, transparent <em>care planning.</em></h2>
+        </div>
+        <div class="booking-steps">
+          <div class="booking-step reveal">
+            <span class="step-number">1</span>
+            <h3>Consultation</h3>
+            <p>We listen, examine and may take digital scans or X-rays. You leave with a clear understanding of your oral health.</p>
+          </div>
+          <div class="booking-step reveal" style="--delay: 80ms;">
+            <span class="step-number">2</span>
+            <h3>Written plan</h3>
+            <p>You receive your options, expected times and fees in writing. We answer every question before you decide.</p>
+          </div>
+          <div class="booking-step reveal" style="--delay: 160ms;">
+            <span class="step-number">3</span>
+            <h3>Comfortable treatment</h3>
+            <p>Appointments are unhurried and adapted to your comfort. Follow-up care is included in your plan.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section">
+      <div class="site-container">
+        <div class="emergency-strip reveal" id="emergency">
+          <span class="emergency-icon"><i data-lucide="heart-pulse"></i></span>
+          <div>
+            <h3>Dental emergency?</h3>
+            <p>Call <a href="tel:+12125550199" style="font-weight:700;color:var(--blue-deep);">+1 (212) 555-0199</a> for pain, swelling, a broken tooth or dental trauma. We reserve same-day appointments for urgent care.</p>
+          </div>
+          <a href="appointment.html#emergency" class="btn btn--primary btn--sm"><span>Emergency Details</span><i data-lucide="arrow-right"></i></a>
+        </div>
+
+        <div class="cta-band reveal" style="margin-top: 1.4rem;">
+          <div class="cta-band-inner">
+            <div>
+              <span class="eyebrow eyebrow--light">Not sure what you need?</span>
+              <h2>Start with a <em>conversation.</em></h2>
+              <p>Book a new patient consultation and we will guide you from there — no treatment is ever provided without your informed consent.</p>
+            </div>
+            <div class="cta-band-actions">
+              <a href="appointment.html" class="btn btn--white"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+              <a href="contact.html" class="btn btn--ghost-light"><i data-lucide="message-circle"></i><span>Ask a Question</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

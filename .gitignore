@@ -14,3 +14,4 @@ backend/.env
 backend/node_modules/
 backend/.pgdata/
 .freebuff/
+_tmp_img/

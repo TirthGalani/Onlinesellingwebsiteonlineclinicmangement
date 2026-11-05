@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Find the Clinic — Maison Dental</title>
+  <meta name="description" content="Visit Maison Dental at 450 Madison Avenue, New York. Call, message us on WhatsApp, email the concierge or use the Google map to plan your visit.">
+  <meta property="og:title" content="Contact — Maison Dental">
+  <meta property="og:description" content="Address, phone, WhatsApp, email, parking and landmarks for your visit.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/site/clinic-interior-1.jpg">
+  <link rel="icon" href="assets/site/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utility-bar">
+    <div class="site-container utility-bar-inner">
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="map-pin"></i> 450 Madison Avenue, New York</span>
+        <span class="utility-item"><i data-lucide="clock"></i> Mon–Fri 8:00–18:00 · Sat 9:00–14:00</span>
+      </div>
+      <div class="utility-group">
+        <span class="utility-item"><i data-lucide="phone"></i> <a href="tel:+12125550199">+1 (212) 555-0199</a></span>
+        <a class="utility-portal" href="portal.html"><i data-lucide="log-in"></i> Patient Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="site-container header-inner">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="patient-information.html">Patient Info</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="contact.html" aria-current="page">Contact</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="portal.html" class="header-portal"><i data-lucide="log-in"></i><span>Portal</span></a>
+        <a href="appointment.html" class="btn btn--primary btn--sm"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="drawer-head">
+      <a href="index.html" class="brand" aria-label="Maison Dental home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">Maison Dental</span>
+          <span class="brand-sub">Care, considered</span>
+        </span>
+      </a>
+      <button class="drawer-close" id="drawerClose" type="button" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Mobile primary navigation">
+      <a href="index.html">Home <i data-lucide="chevron-right"></i></a>
+      <a href="about.html">About Us <i data-lucide="chevron-right"></i></a>
+      <a href="services.html">Services <i data-lucide="chevron-right"></i></a>
+      <a href="appointment.html">Book an Appointment <i data-lucide="chevron-right"></i></a>
+      <a href="patient-information.html">Patient Information <i data-lucide="chevron-right"></i></a>
+      <a href="gallery.html">Gallery <i data-lucide="chevron-right"></i></a>
+      <a href="testimonials.html">Testimonials <i data-lucide="chevron-right"></i></a>
+      <a href="contact.html" aria-current="page">Contact <i data-lucide="chevron-right"></i></a>
+    </nav>
+
+    <div class="drawer-contact">
+      <strong>Visit or call</strong>
+      <a href="tel:+12125550199">+1 (212) 555-0199</a><br>
+      450 Madison Avenue, New York<br>
+      Mon–Fri 8:00–18:00 · Sat 9:00–14:00
+    </div>
+
+    <div class="drawer-actions">
+      <a class="btn btn--primary" href="appointment.html"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+      <a class="btn btn--outline" href="portal.html"><i data-lucide="log-in"></i><span>Patient Portal</span></a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="site-container page-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><i data-lucide="chevron-right"></i><span>Contact</span>
+        </nav>
+        <span class="eyebrow">Come and see us</span>
+        <h1>A warm welcome, <em>right here.</em></h1>
+        <p>Visit us at 450 Madison Avenue, New York. Call us at +1 (212) 555-0199 or message us on WhatsApp — our concierge team replies during clinic hours.</p>
+        <div class="page-hero-actions">
+          <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+          <a href="https://wa.me/12125550199" class="btn btn--outline" target="_blank" rel="noopener"><i data-lucide="message-circle"></i><span>WhatsApp Us</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section" style="padding-top: clamp(2rem, 4vw, 3rem);">
+      <div class="site-container">
+        <div class="contact-layout">
+          <div>
+            <div class="contact-cards reveal">
+              <article class="contact-card">
+                <span class="aside-icon"><i data-lucide="phone"></i></span>
+                <h3>Call the clinic</h3>
+                <p>Our concierge answers during clinic hours.</p>
+                <p><a href="tel:+12125550199">+1 (212) 555-0199</a></p>
+              </article>
+
+              <article class="contact-card">
+                <span class="aside-icon"><i data-lucide="message-circle"></i></span>
+                <h3>WhatsApp</h3>
+                <p>Send a message and photos if helpful.</p>
+                <p><a href="https://wa.me/12125550199" target="_blank" rel="noopener">Start a chat</a></p>
+              </article>
+
+              <article class="contact-card">
+                <span class="aside-icon"><i data-lucide="mail"></i></span>
+                <h3>Email</h3>
+                <p>For non-urgent questions and records.</p>
+                <p><a href="mailto:concierge@maisondental.demo">concierge@maisondental.demo</a></p>
+              </article>
+
+              <article class="contact-card">
+                <span class="aside-icon"><i data-lucide="map-pin"></i></span>
+                <h3>Visit</h3>
+                <p>450 Madison Avenue<br>New York, NY 10022</p>
+                <p><a href="#find-us">Plan your route</a></p>
+              </article>
+            </div>
+
+            <div class="map-card reveal" id="find-us" style="scroll-margin-top: 110px;">
+              <div class="map-frame">
+                <iframe
+                  title="Google Map showing Maison Dental at 450 Madison Avenue, New York"
+                  src="https://www.google.com/maps?q=450%20Madison%20Avenue%2C%20New%20York%2C%20NY%2010022&amp;output=embed"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen></iframe>
+              </div>
+              <div class="map-meta">
+                <i data-lucide="navigation"></i>
+                <div>
+                  <strong>Maison Dental — 450 Madison Avenue</strong>
+                  Between East 49th and East 50th Streets. Enter through the light-blue awning; reception is on the second floor via lift.<br>
+                  <a class="text-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=450%20Madison%20Avenue%2C%20New%20York%2C%20NY%2010022" target="_blank" rel="noopener">Get directions <i data-lucide="arrow-up-right"></i></a>
+                </div>
+              </div>
+            </div>
+
+            <div class="aside-card reveal" style="margin-top: 1rem;">
+              <h3>Parking &amp; landmarks</h3>
+              <p>Plan a little extra time if you are driving — Midtown parking fills quickly on weekdays.</p>
+              <ul class="parking-list">
+                <li><i data-lucide="circle-check"></i> <span><strong>Nearest garage:</strong> 24-hour covered parking on East 50th Street, a two-minute walk from the clinic.</span></li>
+                <li><i data-lucide="circle-check"></i> <span><strong>By subway:</strong> 5 minutes from 5th Avenue/53rd Street (E, M) and 51st Street (6).</span></li>
+                <li><i data-lucide="circle-check"></i> <span><strong>Landmark:</strong> opposite the north-west corner of Madison Square Park, next door to the blue awning café.</span></li>
+                <li><i data-lucide="circle-check"></i> <span><strong>Accessibility:</strong> step-free entrance, lift access and an accessible treatment room.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="reveal" style="--delay: 100ms;">
+            <div class="contact-form-card">
+              <span class="eyebrow">Send a note</span>
+              <h2>How can we <em>help?</em></h2>
+              <p>Tell us a little about what you need. For appointment requests, use the <a class="text-link" href="appointment.html">booking form</a> so we can offer you a time.</p>
+
+              <form class="contact-form" id="contactForm" novalidate>
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label for="contactName">Full name <span class="req">*</span></label>
+                    <input type="text" id="contactName" name="name" autocomplete="name" required aria-describedby="contactNameError">
+                    <span class="field-error" id="contactNameError"></span>
+                  </div>
+
+                  <div class="form-field">
+                    <label for="contactEmail">Email address <span class="req">*</span></label>
+                    <input type="email" id="contactEmail" name="email" autocomplete="email" required aria-describedby="contactEmailError">
+                    <span class="field-error" id="contactEmailError"></span>
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label for="contactPhone">Phone (optional)</label>
+                    <input type="tel" id="contactPhone" name="phone" autocomplete="tel">
+                  </div>
+
+                  <div class="form-field form-field--full">
+                    <label for="contactMessage">Your message <span class="req">*</span></label>
+                    <textarea id="contactMessage" name="message" rows="5" required placeholder="How can we help? Please do not include sensitive medical details in this form." aria-describedby="contactMessageError"></textarea>
+                    <span class="field-error" id="contactMessageError"></span>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn--primary"><span>Send Message</span><i data-lucide="send"></i></button>
+                <div class="form-feedback" id="contactFeedback" role="status" aria-live="polite"></div>
+                <p class="form-note">This demo form opens your own email app with the message ready to send — nothing is transmitted by the website itself. Please do not send urgent clinical information by email. For anything urgent, call <a href="tel:+12125550199">+1 (212) 555-0199</a>.</p>
+              </form>
+            </div>
+
+            <div class="aside-card aside-card--tinted" style="margin-top: 1rem;">
+              <h3>Opening hours</h3>
+              <ul class="hours-list">
+                <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+                <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+                <li><span>Sunday</span><span>Closed</span></li>
+                <li><span>Emergency line</span><span>24 hours</span></li>
+              </ul>
+            </div>
+
+            <div class="aside-card aside-card--navy" style="margin-top: 1rem;">
+              <span class="aside-icon"><i data-lucide="siren"></i></span>
+              <h3>Dental emergency?</h3>
+              <p>Severe pain, swelling, bleeding or a knocked-out tooth needs prompt attention. Call the emergency line and we will advise you immediately.</p>
+              <div class="aside-actions">
+                <a class="btn btn--white btn--sm" href="tel:+12125550199"><i data-lucide="phone"></i><span>Call Emergency Line</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="site-section site-section--mist">
+      <div class="site-container">
+        <div class="section-head section-head--center reveal">
+          <span class="eyebrow eyebrow--center">Before your visit</span>
+          <h2>Everything you need, <em>sorted in advance.</em></h2>
+          <p>A first appointment is simpler when you know what to expect. These pages answer the questions we hear most often.</p>
+        </div>
+
+        <div class="feature-grid">
+          <a class="feature-card reveal" href="patient-information.html" style="text-decoration:none;">
+            <span class="feature-icon"><i data-lucide="clipboard-check"></i></span>
+            <h3>Your first visit</h3>
+            <p>What happens, how long it takes and what to bring with you.</p>
+          </a>
+          <a class="feature-card reveal" href="patient-information.html#payment" style="text-decoration:none; --delay: 80ms;">
+            <span class="feature-icon"><i data-lucide="credit-card"></i></span>
+            <h3>Insurance &amp; payment</h3>
+            <p>Accepted plans, payment options and how estimates are provided.</p>
+          </a>
+          <a class="feature-card reveal" href="appointment.html" style="text-decoration:none; --delay: 160ms;">
+            <span class="feature-icon"><i data-lucide="calendar-plus"></i></span>
+            <h3>Book online</h3>
+            <p>Send a request with your preferred day and time in under two minutes.</p>
+          </a>
+        </div>
+
+        <div class="cta-band reveal" style="margin-top: 2rem;">
+          <div class="cta-band-inner">
+            <div>
+              <span class="eyebrow eyebrow--light">We are here</span>
+              <h2>Questions before <em>you book?</em></h2>
+              <p>Call, message or email — whichever feels easiest. Our concierge team will point you to the right clinician and explain what a first visit involves.</p>
+            </div>
+            <div class="cta-band-actions">
+              <a href="appointment.html" class="btn btn--white"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+              <a href="tel:+12125550199" class="btn btn--ghost-light"><i data-lucide="phone"></i><span>Call the Clinic</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="brand" aria-label="Maison Dental home">
+            <span class="brand-mark">
+              <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M32 13c-7.4 0-11.6 3.7-11.6 9.4 0 4.8 1.9 7.8 3 13.3 1 5.1 1.8 11.3 5 11.3 3.4 0 3.1-9.6 5.6-9.6s2.2 9.6 5.6 9.6c3.2 0 4-6.2 5-11.3 1.1-5.5 3-8.5 3-13.3C47.6 16.7 43.4 13 36 13c-1.7 0-3.1.5-4 .9-.9-.4-2.3-.9-4-.9Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">Maison Dental</span>
+              <span class="brand-sub">Care, considered</span>
+            </span>
+          </a>
+          <p>A quiet, considered clinic combining advanced technology with warm, patient-focused dentistry for the whole family.</p>
+          <div class="footer-contact">
+            <a href="tel:+12125550199"><i data-lucide="phone"></i> +1 (212) 555-0199</a>
+            <a href="mailto:concierge@maisondental.demo"><i data-lucide="mail"></i> concierge@maisondental.demo</a>
+            <span><i data-lucide="map-pin"></i> 450 Madison Avenue, New York, NY 10022</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="testimonials.html">Testimonials</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Patient Care</h4>
+          <ul>
+            <li><a href="appointment.html">Book an Appointment</a></li>
+            <li><a href="patient-information.html">Your First Visit</a></li>
+            <li><a href="patient-information.html#payment">Insurance &amp; Payment</a></li>
+            <li><a href="patient-information.html#instructions">Pre &amp; Post Care</a></li>
+            <li><a href="patient-information.html#faqs">FAQs</a></li>
+            <li><a href="portal.html">Patient Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Opening Hours</h4>
+          <ul class="footer-hours">
+            <li><span>Monday – Friday</span><span>8:00 – 18:00</span></li>
+            <li><span>Saturday</span><span>9:00 – 14:00</span></li>
+            <li><span>Sunday</span><span>Closed</span></li>
+            <li><span>Emergency line</span><span>24 hours</span></li>
+          </ul>
+          <div class="footer-social">
+            <a href="contact.html" aria-label="Contact the clinic"><i data-lucide="message-circle"></i></a>
+            <a href="tel:+12125550199" aria-label="Call the clinic"><i data-lucide="phone"></i></a>
+            <a href="mailto:concierge@maisondental.demo" aria-label="Email the clinic"><i data-lucide="mail"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> Maison Dental. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="patient-information.html">Patient Information</a>
+          <a href="contact.html">Contact</a>
+          <a href="portal.html">Portal Login</a>
+        </div>
+        <span class="footer-demo-note">Demo website: contact details, photography and reviews are placeholders — replace them with your clinic's real information before publishing. Clinical information is general and is not a substitute for professional advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-dock">
+    <a href="appointment.html" class="btn btn--primary"><i data-lucide="calendar-plus"></i><span>Book Appointment</span></a>
+    <a href="tel:+12125550199" class="btn btn--outline"><i data-lucide="phone"></i><span>Call Clinic</span></a>
+  </div>
+
+  <div class="site-toast" id="siteToast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
